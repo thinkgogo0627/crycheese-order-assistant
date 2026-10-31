@@ -16,13 +16,15 @@ from app.core.scenario import Scenario
 from app.features.base import BaseResponse, Feature
 
 # ---- 1) import: 여기에 추가 ----
+from app.features.hourly_forecast.feature import HourlyForecast, IntradayPlan
 # from app.features.<name>.feature import <Class>
 
 FEATURES: dict[str, Feature] = {
     f.name: f
     for f in [
         # ---- 2) 등록: 여기에 추가 ----
-        # <Class>(),
+        HourlyForecast(),
+        IntradayPlan(),
     ]
 }
 
