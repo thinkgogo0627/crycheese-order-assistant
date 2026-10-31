@@ -1,11 +1,13 @@
 """
-기능 목록. 여기 등록된 기능만 API로 노출된다.
+기능 목록. 여기 등록된 기능만 API(POST /api/<name>)로 노출된다.
 
-[조원] 새 기능을 만들면 아래 FEATURES 에 한 줄 추가. 이 파일의 다른 곳은 건드리지 않는다.
+[조원] 새 기능을 만들면 아래 두 곳에 한 줄씩만 추가. 이 파일의 다른 곳은 건드리지 않는다.
+    1) import:   from app.features.<name>.feature import <Class>
+    2) FEATURES: <Class>(),
 
 기능끼리 호출할 때는 반드시 registry.run 을 쓴다 (캐시 공유):
     from app.features import registry        # ← 모듈째 import (순환 import 방지)
-    fc = registry.run("forecast", sc)
+    res = registry.run("<name>", sc)
 """
 from collections import OrderedDict
 
@@ -13,17 +15,14 @@ from app.core.errors import AppError
 from app.core.scenario import Scenario
 from app.features.base import BaseResponse, Feature
 
-from app.features.forecast.feature import Forecast
-from app.features.inventory.feature import Inventory
-from app.features.orders.feature import Orders
+# ---- 1) import: 여기에 추가 ----
+# from app.features.<name>.feature import <Class>
 
 FEATURES: dict[str, Feature] = {
     f.name: f
     for f in [
-        Forecast(),
-        Inventory(),
-        Orders(),
-        # NewFeature(),   ← 여기에 한 줄 추가
+        # ---- 2) 등록: 여기에 추가 ----
+        # <Class>(),
     ]
 }
 

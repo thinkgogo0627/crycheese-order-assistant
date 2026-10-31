@@ -1,4 +1,6 @@
-"""API 스모크 테스트 (표준 라이브러리만 사용). 대상: app/main.py + app/engine.py
+"""API 스모크 테스트 (표준 라이브러리만 사용).
+- [기능] /api/features 에 등록된 모든 기능을 SPEC 규격(응답 공통 필드·basis·에러 포맷)으로 검사
+- [LEGACY] 임시 엔진 /api/plan, /api/backtest, /dashboard (엔진 삭제 시 이 블록도 삭제)
 
 사용:
     python3 scripts/smoke_test.py                                          # 로컬 http://localhost:8000
@@ -52,6 +54,32 @@ check("GET /health (데이터 17개 로드)", s == 200 and isinstance(j, dict) a
       f"{s}, ok={j.get('ok') if isinstance(j, dict) else j}, 테이블 {n}개, {ms}ms")
 check("CORS 헤더", "access-control-allow-origin" in h, h.get("access-control-allow-origin", "없음"))
 
+# ---------------- 기능 (SPEC 규격) ----------------
+s, feats, _, ms = call("GET", "/api/features")
+check("GET /api/features", s == 200 and isinstance(feats, list), f"{s}, {[f.get('name') for f in feats] if isinstance(feats, list) else feats}")
+for f in feats if isinstance(feats, list) else []:
+    name = f["name"]
+    s, j, _, ms = call("POST", f"/api/{name}", SC)
+    if s != 200 or not isinstance(j, dict):
+        check(f"POST /api/{name}", False, f"{s}, {json.dumps(j, ensure_ascii=False)[:300]}")
+        continue
+    lists = {k: v for k, v in j.items() if isinstance(v, list) and k != "assumptions"}
+    rows = [r for v in lists.values() for r in v if isinstance(r, dict)]
+    no_basis = sum(1 for r in rows if not r.get("basis"))
+    check(f"POST /api/{name}", j.get("scenario", {}).get("store_id") == "S02",
+          f"{ms}ms, " + ", ".join(f"{k} {len(v)}" for k, v in lists.items()))
+    check(f"  {name}: assumptions 있음", bool(j.get("assumptions")), str(len(j.get("assumptions") or [])))
+    check(f"  {name}: 모든 행에 basis", no_basis == 0, f"basis 없는 행 {no_basis}/{len(rows)}")
+    check(f"  {name}: 3초 이내", ms < 3000, f"{ms}ms")
+    s, j, _, _ = call("POST", f"/api/{name}", {**SC, "as_of": "2026-12-01"})
+    check(f"  {name}: 범위 밖 입력 → 422 + error 포맷", s == 422 and isinstance(j, dict) and "error" in j, str(s))
+if isinstance(feats, list) and not feats:
+    print("       (등록된 기능 없음 — registry.py 에 추가하면 자동으로 검사됨)")
+
+s, j, _, _ = call("POST", "/api/__nope__", SC)
+check("없는 경로 → 404 + error 포맷", s == 404 and isinstance(j, dict) and "error" in j, str(s))
+
+# ---------------- [LEGACY] 임시 엔진 ----------------
 s, j, h, ms = call("POST", "/api/plan", SC)
 if s == 200 and isinstance(j, dict):
     missing = [k for k in PLAN_KEYS if k not in j]

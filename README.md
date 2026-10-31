@@ -1,6 +1,6 @@
 # 식자재 관리 및 발주 자동화 (크라이치즈버거 AX 해커톤 주제 1)
 
-백엔드: FastAPI on Vercel (`app/main.py`의 `app` 자동 인식) · 프론트: React + Vite on Vercel (`frontend/`)
+백엔드: FastAPI on Vercel (`app/main.py`의 `app` 자동 인식, `hackathon-cry-cheese-api.vercel.app`) · 프론트: React + Vite on Vercel (`frontend/`)
 
 ## 로컬 실행
 
@@ -22,10 +22,10 @@ Hackathon/
 │  └─ features/
 │     ├─ base.py             [호진] Feature / Row / BaseResponse 계약
 │     ├─ registry.py         [호진] 기능 목록 (조원은 FEATURES에 한 줄 추가만)
+│     ├─ SPEC.md             [호진] ★ 기능 규격 — 기능 작성 전 반드시 읽기
 │     ├─ _template/          [호진] 복사용 견본
-│     ├─ forecast/           [조원 A] 수요 예측          → POST /api/forecast
-│     ├─ inventory/          [조원 B] 재고 투영 + 알림    → POST /api/inventory
-│     └─ orders/             [조원 C] 발주 추천          → POST /api/orders
+│     └─ <name>/             [조원] 기능 1개 = 폴더 1개 → POST /api/<name>
+│  ├─ engine.py, forecast.py, static/   [LEGACY] 임시 엔진 (/api/plan, /api/backtest, /dashboard). 기능 교체 후 삭제
 ├─ scripts/                  [조원] 로컬 전용 (학습·사전 계산). 배포 제외
 ├─ data/
 │  ├─ raw/                   원본 CSV (수정 금지)
@@ -43,7 +43,7 @@ Hackathon/
 
 자기 폴더 안에서는 파일을 자유롭게 추가해도 됨 (`utils.py` 등). **자기 폴더 밖은 수정 금지** (예외: `registry.py` 한 줄).
 
-현재 forecast / inventory / orders 는 **STUB**(호진이 만든 임시 계산)이 들어 있음. 응답 모양은 초안이니 담당자가 수정하고 공유.
+**기능 규격은 [`app/features/SPEC.md`](app/features/SPEC.md)가 기준.** Claude Code에 맡길 때: "`app/features/SPEC.md`를 읽고, 그 규격에 맞춰 `app/features/<기능명>/`에 기능을 작성해. `_template/`을 복사해서 시작해."
 
 ## 새 기능 추가 순서
 
