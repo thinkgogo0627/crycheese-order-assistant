@@ -29,7 +29,7 @@ export function Layout() {
           <ArrowUpRight size={15} />
         </a>
         <div className="workspace-label">
-          STORE OPERATIONS <span>DEMO</span>
+          매장 운영 <span>시연용</span>
         </div>
         <nav aria-label="주 메뉴">
           {features.map(({ path, label, icon: Icon }) => (
@@ -48,11 +48,6 @@ export function Layout() {
           ))}
         </nav>
         <div className="sidebar-bottom">
-          <p className="sidebar-note">
-            필요한 만큼 준비하고,
-            <br />
-            함께 낭비를 줄입니다.
-          </p>
           <div className="account-footer">
             <span className="avatar">{account?.store.slice(-2)}</span>
             <div>
@@ -85,12 +80,12 @@ export function Layout() {
         <div className="workspace-content">
           <div className="context-strip">
             <span>
-              <i /> 합성 데이터 시뮬레이션 · {scenario.as_of} 기준 ·{" "}
+              <i /> {scenario.as_of} 기준 ·{" "}
               {scenario.horizon_days}일 전망
             </span>
             <details className="scenario-popover">
               <summary>
-                <SlidersHorizontal size={15} /> 분석 조건
+                <SlidersHorizontal size={15} /> 조회 설정
               </summary>
               <ScenarioPanel />
             </details>
@@ -99,8 +94,8 @@ export function Layout() {
             <Outlet />
           </main>
           <footer className="workspace-footer">
-            <span>CRYCHEESEBURGER OPERATIONS</span>
-            <span>모든 발주·공급 결과는 실행 전 검토할 초안입니다.</span>
+            <span>크라이치즈버거 · 매장 운영</span>
+            <span>합성 자료 시연 · 가상 금액 · 발주·공급 전 담당자 확인</span>
           </footer>
         </div>
       </div>

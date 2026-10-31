@@ -11,8 +11,9 @@ import {
   Truck,
   Check,
 } from "lucide-react";
-import type { ReactNode } from "react";
+import { Fragment, useId, useState, type ReactNode } from "react";
 import { apiPost } from "@/lib/api";
+import { applyOrderQuantity, orderDraftCsv, orderGroupKey, orderMinimumChecks } from "@/lib/editableOrderDraft";
 import { useAuth } from "@/lib/auth";
 import { useScenario } from "@/lib/scenario";
 import { usePlan } from "./PlannerPage";
@@ -38,7 +39,7 @@ function SupplyBoundary({
     return (
       <Card>
         <div className="loading-line" />
-        <p className="muted">예측 수요와 발주·보관 조건을 계산하고 있습니다.</p>
+        <p className="muted">공급 내역을 불러오고 있습니다.</p>
       </Card>
     );
   if (q.isError)
@@ -56,36 +57,28 @@ function SupplyBoundary({
 }
 function DraftTable({ rows, title }: { rows: HubOrder[]; title: string }) {
   const { scenario } = useScenario();
+  return <EditableDraftTable key={JSON.stringify([scenario, rows])} rows={rows} title={title} />;
+}
+function EditableDraftTable({ rows, title }: { rows: HubOrder[]; title: string }) {
+  const { scenario } = useScenario();
+  const tableId = useId();
+  const [expandedRow, setExpandedRow] = useState<string | null>(null);
+  const [quantities, setQuantities] = useState<Record<number, string>>({});
+  const edited = rows.map((row, i) => {
+    const value = applyOrderQuantity(row, quantities[i] ?? String(row.order_qty));
+    return value && { ...value, status: value.order_qty !== row.order_qty ? "수량 수정" : row.status };
+  });
+  const invalid = edited.some(row => row === null);
+  const changed = rows.some((row, i) => edited[i]?.order_qty !== row.order_qty);
+  const minimums = orderMinimumChecks(rows, edited);
+  const downloadable = edited.filter((row): row is HubOrder => row !== null && row.order_qty > 0).map(row => {
+    const group = minimums.find(value => value.key === orderGroupKey(row));
+    return { ...row, order_total: group?.amount ?? row.amount,
+      status: group?.below ? "MIN_AMOUNT_REVIEW" : row.status === "MIN_AMOUNT_REVIEW" ? "DRAFT" : row.status };
+  });
   function download() {
-    const lines = [
-      [
-        "매장",
-        "식자재",
-        "발주일",
-        "입고일",
-        "포장 수량",
-        "단위",
-        "금액",
-        "상태",
-      ],
-      ...rows.map((r) => [
-        r.store_id,
-        r.ingredient_name,
-        r.order_date,
-        r.arrival_date,
-        r.order_qty,
-        r.order_unit,
-        r.amount,
-        r.status,
-      ]),
-    ];
-    const csv =
-      "\uFEFF" +
-      lines
-        .map((row) =>
-          row.map((v) => `"${String(v).replaceAll('"', '""')}"`).join(","),
-        )
-        .join("\r\n");
+    if (invalid || !downloadable.length) return;
+    const csv = orderDraftCsv(downloadable);
     const url = URL.createObjectURL(
       new Blob([csv], { type: "text/csv;charset=utf-8" }),
     );
@@ -103,21 +96,39 @@ function DraftTable({ rows, title }: { rows: HubOrder[]; title: string }) {
         </h2>
         <button
           className="button secondary small"
-          disabled={!rows.length}
+          disabled={invalid || !downloadable.length}
           onClick={download}
         >
-          <Download size={14} /> CSV 초안
+          <Download size={14} /> 발주 목록 내려받기
         </button>
       </div>
+      {rows.length > 0 && <div className="draft-edit-summary">
+        <span>발주 합계 <b>{invalid ? "수량 확인 필요" : won(downloadable.reduce((sum, row) => sum + row.amount, 0))}</b></span>
+        {changed && <button type="button" className="text-button" onClick={() => setQuantities({})}>추천 수량으로 초기화</button>}
+      </div>}
+      {minimums.some(group => group.below) && <div className="draft-minimum-warning" role="status">
+        {minimums.filter(group => group.below).map(group => <p key={group.key}>
+          {group.store} · {group.supplier} · {group.date} <b>최소주문금액 미달</b>
+        </p>)}
+      </div>}
+      {changed && <p className="hint draft-edit-note">재고 전망: 추천 수량 기준</p>}
       {!rows.length ? (
         <div className="empty-state">
           <PackageCheck size={28} />
-          <b>생성된 발주 초안이 없습니다</b>
+          <b>발주할 품목이 없습니다</b>
           <p>재고, 발주 요일, 다음 입고일과 최소 발주금액을 함께 확인하세요.</p>
         </div>
       ) : (
         <div className="table-scroll">
-          <table>
+          <table className="draft-table">
+            <colgroup>
+              <col style={{ width: "24%" }} />
+              <col style={{ width: "8%" }} />
+              <col style={{ width: "18%" }} />
+              <col style={{ width: "17%" }} />
+              <col style={{ width: "15%" }} />
+              <col style={{ width: "18%" }} />
+            </colgroup>
             <thead>
               <tr>
                 <th>식자재 / 공급사</th>
@@ -129,40 +140,59 @@ function DraftTable({ rows, title }: { rows: HubOrder[]; title: string }) {
               </tr>
             </thead>
             <tbody>
-              {rows.map((r, i) => (
-                <tr key={`${r.store_id}-${r.ingredient_id}-${i}`}>
+              {rows.map((r, i) => {
+                const key = `${r.store_id}-${r.ingredient_id}-${r.order_date}-${i}`;
+                const open = expandedRow === key;
+                const detailId = `${tableId}-basis-${i}`;
+                const value = edited[i];
+                const modified = value !== null && value.order_qty !== r.order_qty;
+                return <Fragment key={key}>
+                <tr>
                   <td>
                     <b>{r.ingredient_name}</b>
                     <small>{r.supplier_id}</small>
                   </td>
                   <td>{r.store_id}</td>
                   <td>
-                    {r.order_qty}
-                    {r.order_unit}
+                    <div className="draft-quantity-field">
+                      <input type="number" inputMode="numeric" min={0} step={1}
+                        value={quantities[i] ?? r.order_qty}
+                        aria-label={`${r.store_id} ${r.ingredient_name} 발주 수량`}
+                        aria-invalid={value === null}
+                        aria-describedby={value === null ? `${tableId}-error-${i}` : undefined}
+                        onChange={e => setQuantities(current => ({ ...current, [i]: e.target.value }))} />
+                      <span>{r.order_unit}</span>
+                    </div>
+                    {value === null && <small id={`${tableId}-error-${i}`} className="draft-input-error">0 이상의 정수를 입력하세요.</small>}
                     <small>
-                      사용 단위 {num(r.use_qty)}
+                      추천 {r.order_qty}{r.order_unit} · {value ? num(value.use_qty) : "—"}
                       {r.use_unit}
                     </small>
                   </td>
                   <td>{r.arrival_date}</td>
-                  <td>{won(r.amount)}</td>
+                  <td>{value ? won(value.amount) : "—"}</td>
                   <td>
                     <span
-                      className={`badge ${r.status === "DRAFT" ? "neutral" : "warning"}`}
+                      className={`badge ${modified || (r.status !== "DRAFT" && r.status !== "MIN_AMOUNT_REVIEW") ? "warning" : "neutral"}`}
                     >
-                      {r.status === "DRAFT"
+                      {modified
+                        ? value.order_qty === 0 ? "발주 제외" : "수량 수정"
+                        : r.status === "DRAFT" || r.status === "MIN_AMOUNT_REVIEW"
                         ? "검토 대기"
-                        : r.status === "MIN_AMOUNT_REVIEW"
-                          ? "최소금액 확인"
-                          : "기한·용량 확인"}
+                        : "기한·용량 확인"}
                     </span>
-                    <details>
-                      <summary>계산 근거</summary>
-                      <p className="hint">{r.basis}</p>
-                    </details>
+                    <button type="button" className="draft-basis-toggle"
+                      aria-expanded={open} aria-controls={detailId}
+                      onClick={() => setExpandedRow(open ? null : key)}>
+                      {open ? "근거 닫기" : "계산 근거"}
+                    </button>
                   </td>
                 </tr>
-              ))}
+                <tr id={detailId} hidden={!open} className="draft-basis-row">
+                  <td colSpan={6}><p>{modified && <b>추천 수량 기준 · </b>}{r.basis}</p></td>
+                </tr>
+                </Fragment>;
+              })}
             </tbody>
           </table>
         </div>
@@ -194,10 +224,10 @@ export function OverviewPage() {
         <PageHeader
           title={
             account?.role === "hub"
-              ? "우리 그룹의 준비 상태"
-              : "우리 매장의 준비 상태"
+              ? "허브 운영 현황"
+              : "매장 운영 현황"
           }
-          description={`${account?.store} · ${account?.title} 작업 공간`}
+          description={`${account?.store} · ${account?.title}`}
         />
         <span className="date-label">
           {scenario.as_of.replaceAll("-", ".")}
@@ -206,49 +236,26 @@ export function OverviewPage() {
       </div>
       <section className="welcome-banner">
         <div>
-          <span className="eyebrow yellow">READY FOR A GOOD DAY</span>
+          <span className="eyebrow yellow">오늘의 업무</span>
           <h2>
-            {account?.role === "hub" ? (
-              <>
-                매장마다 필요한 재고,
-                <br />
-                한곳에서 살펴보세요.
-              </>
-            ) : account?.role === "member" ? (
-              <>
-                부족하기 전에 확인하고,
-                <br />
-                가까운 허브와 준비하세요.
-              </>
-            ) : (
-              <>
-                다음 입고까지 충분할까요?
-                <br />
-                우리 매장 발주를 점검하세요.
-              </>
-            )}
+            {account?.role === "hub"
+              ? "허브 공급·발주"
+              : account?.role === "member"
+                ? "매장 발주·보충"
+                : "정기·긴급 발주"}
           </h2>
           <p>
             {account?.role === "independent"
-              ? "허브 없이 정기발주와 외부 긴급발주로 운영합니다."
-              : "S01 허브와 S02 매장을 연결합니다. S03 독립 매장은 포함하지 않습니다."}
+              ? "정기발주 · 긴급발주"
+              : "허브 재고 · 매장별 공급 예정 물량"}
           </p>
           <Link
             to={account?.role === "hub" ? "/hub" : "/orders"}
             className="button primary"
           >
-            {account?.role === "hub" ? "그룹 공급안 확인" : "발주 초안 확인"}
+            {account?.role === "hub" ? "공급 내역 보기" : "발주 초안 확인"}
             <ArrowUpRight size={17} />
           </Link>
-        </div>
-        <div className="banner-mark" aria-hidden="true">
-          <Warehouse size={90} strokeWidth={1} />
-          <span>
-            {account?.role === "independent" ? "DIRECT" : "H01"}
-            <small>
-              {account?.role === "independent" ? "S03 · SUPPLIER" : "S01 + S02"}
-            </small>
-          </span>
         </div>
       </section>
       {(q.isError || h.isError) && (
@@ -337,7 +344,6 @@ export function OverviewPage() {
               <span className="task-number">01</span>
               <div>
                 <b>부족·소비기한 위험 확인</b>
-                <p>오래된 로트가 먼저 사용되는지 살펴보세요.</p>
               </div>
               <ArrowUpRight size={17} />
             </Link>
@@ -349,11 +355,6 @@ export function OverviewPage() {
                     ? "긴급발주 도착 전 공백 확인"
                     : "허브 공급 가능량과 보관 여력 확인"}
                 </b>
-                <p>
-                  {account?.role === "independent"
-                    ? "다음날 입고로 오늘의 판매손실을 회복할 수는 없습니다."
-                    : "운송 30분에 준비·검수 시간을 더해 검토합니다."}
-                </p>
               </div>
               <ArrowUpRight size={17} />
             </Link>
@@ -361,7 +362,6 @@ export function OverviewPage() {
               <span className="task-number">03</span>
               <div>
                 <b>발주량·입고일·최소금액 검토</b>
-                <p>추천은 초안입니다. 실제 전송 전 담당자가 확인하세요.</p>
               </div>
               <ArrowUpRight size={17} />
             </Link>
@@ -398,7 +398,6 @@ export function OverviewPage() {
                 </div>
               ))
           )}
-          <p className="hint">공통 EWMA 예측 · 실제 판매 실적이 아닙니다.</p>
         </Card>
       </div>
     </>
@@ -410,20 +409,20 @@ export function SupplyPage({ view }: { view: "orders" | "hub" | "emergency" }) {
   const manager = account?.role === "hub";
   const title =
     view === "orders"
-      ? "필요한 만큼, 정기발주"
+      ? "정기발주"
       : view === "emergency"
-        ? "남은 부족, 긴급발주 검토"
+        ? "긴급발주"
         : manager
-          ? "허브 재고와 그룹 공급"
-          : "우리 매장 허브 보충";
+          ? "허브 공급"
+          : "허브 보충";
   return (
     <>
       <PageHeader
         title={title}
         description={
           view === "hub"
-            ? "매장 간 직접 이동 없이 허브를 통해 공급하는 시나리오입니다."
-            : "예측 수요, 유효 재고, 기확정 입고와 공급사 제약을 반영한 검토 초안입니다."
+            ? "최소 주문 기준을 맞추기 어려운 매장을 위해 대형 점포를 공동 구매 거점인 허브로 운영합니다. 여러 매장의 물량을 함께 주문한 뒤, 필요한 만큼 각 매장으로 나눠 보냅니다."
+            : "발주할 품목과 수량, 입고 예정일을 확인합니다."
         }
       />
       <SupplyBoundary>
@@ -436,47 +435,6 @@ export function SupplyPage({ view }: { view: "orders" | "hub" | "emergency" }) {
           const shortages = p.shortages.filter(own);
           return (
             <div className="stack">
-              <div
-                className={`notice ${p.status === "FEASIBLE_SCENARIO" ? "" : "warning"}`}
-              >
-                <CircleAlert size={18} />
-                <div>
-                  <b>
-                    {p.status === "FEASIBLE_SCENARIO"
-                      ? "입력 조건을 충족하는 계산안입니다."
-                      : "현재 조건을 모두 만족하는 계획이 없습니다."}
-                  </b>
-                  <p>
-                    {manager
-                      ? "그룹 전체"
-                      : account?.role === "member"
-                        ? "소속 그룹"
-                        : "S03 단독"}
-                    의 원가 가중 식자재 수요 충족률{" "}
-                    {(p.fill_rate * 100).toFixed(1)}% · 목표{" "}
-                    {(p.service_target * 100).toFixed(0)}%.{" "}
-                    {p.status !== "FEASIBLE_SCENARIO" &&
-                      "아래 결과는 문제 확인용이며 실행 가능한 추천안으로 보장하지 않습니다."}
-                  </p>
-                  {p.status !== "FEASIBLE_SCENARIO" && (
-                    <p>
-                      제약 확인: 최소금액 미달{" "}
-                      {
-                        p.store_orders
-                          .concat(p.hub_orders)
-                          .filter((x) => x.status === "MIN_AMOUNT_REVIEW")
-                          .length
-                      }
-                      건 · 용량 미달{" "}
-                      {p.groups.filter((g) => !g.capacity_ok).length}그룹 · 차량
-                      여력 미달 {p.groups.filter((g) => !g.fleet_ok).length}그룹
-                      · 거리 초과{" "}
-                      {p.groups.flatMap((g) => g.outside_30_minutes).length}
-                      매장. 그룹 내 각 매장의 목표 충족 여부도 검사합니다.
-                    </p>
-                  )}
-                </div>
-              </div>
               {view === "orders" && (
                 <>
                   <div className="flow-strip">
@@ -504,43 +462,36 @@ export function SupplyPage({ view }: { view: "orders" | "hub" | "emergency" }) {
                       rows={p.hub_orders}
                     />
                   )}
-                  <p className="hint">
-                    {account?.role === "independent"
-                      ? "S03의 예측 수요와 안전재고를 자체 확보합니다. 허브 공급과 매장 간 이동은 계산에서 제외합니다."
-                      : "매장 기본 수요량을 일괄 축소하지 않습니다. 매장 대응 재고를 남기고, 안전재고 중 허브로 옮길 수 있는 비율을 비교합니다."}
-                  </p>
                 </>
               )}
               {view === "hub" && (
                 <>
                   <Card>
                     <div className="section-heading">
-                      <h2>{manager ? "그룹 운영 구조" : "소속 허브 안내"}</h2>
+                      <h2>{manager ? "공급 경로" : "공급 허브"}</h2>
                       <span className="badge neutral">
                         {scenario.hub_policy === "auto"
-                          ? "대안 탐색 모드"
-                          : "H01 고정 운영"}
+                          ? "허브 자동 선택"
+                          : "H01"}
                       </span>
                     </div>
                     <div className="network-strip">
                       <div className="network-node hub">
                         <Warehouse size={24} />
-                        <b>S01 · H01 허브</b>
-                        <small>자체 영업분 제외 여유 공간</small>
+                        <b>S01 · 공급 허브</b>
+                        <small>H01 · 공동 재고 보관</small>
                       </div>
                       <span className="network-edge">
                         →<small>운송 30분</small>
                       </span>
                       <div className="network-node">
                         <PackageCheck size={24} />
-                        <b>S02 · 소속 매장</b>
-                        <small>허브 보충 대상</small>
+                        <b>S02 · 공급 매장</b>
+                        <small>허브 재고 보충</small>
                       </div>
                     </div>
                     <p className="hint">
-                      S03 독립 매장은 이 그룹과 재고·발주를 공유하지 않습니다.
-                      준비 10분 + 검수 5분을 포함한 응답시간은 최대 45분
-                      가정입니다.
+                      예상 소요시간 45분 · 준비 10분 + 운송 30분 + 검수 5분
                     </p>
                   </Card>
                   {manager && (
@@ -577,7 +528,7 @@ export function SupplyPage({ view }: { view: "orders" | "hub" | "emergency" }) {
                                 />
                               </div>
                               <p className="hint">
-                                입고 직후 최대 보관량 · 부피는 가정값
+                                입고 후 최대 예상량 · 추정 부피
                               </p>
                             </Card>
                           );
@@ -589,19 +540,18 @@ export function SupplyPage({ view }: { view: "orders" | "hub" | "emergency" }) {
                     <div className="section-heading">
                       <h2>
                         {manager
-                          ? "그룹 허브 공급 초안"
-                          : "우리 매장 보충 요청 초안"}{" "}
+                          ? "매장별 공급 예정"
+                          : "보충 예정 물량"}{" "}
                         <span className="count">{transfers.length}</span>
                       </h2>
-                      <span className="badge warning">미전송</span>
+                      <span className="badge warning">담당자 확인 전</span>
                     </div>
                     {!transfers.length ? (
                       <div className="empty-state">
                         <Warehouse size={28} />
-                        <b>현재 공급 가능한 허브 이동안이 없습니다</b>
+                        <b>허브 공급 예정 물량이 없습니다</b>
                         <p>
-                          부족이 없거나 허브 입고·용량·포장 제약으로 공급이
-                          어려울 수 있습니다.
+                          부족 품목이 있다면 허브 재고와 입고일을 확인해 주세요.
                         </p>
                       </div>
                     ) : (
@@ -613,8 +563,8 @@ export function SupplyPage({ view }: { view: "orders" | "hub" | "emergency" }) {
                               <th>경로</th>
                               <th>식자재</th>
                               <th>수량</th>
-                              <th>응답시간</th>
-                              <th>기존 소비기한</th>
+                              <th>예상 소요시간</th>
+                              <th>소비기한</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -638,8 +588,7 @@ export function SupplyPage({ view }: { view: "orders" | "hub" | "emergency" }) {
                       </div>
                     )}
                     <p className="hint">
-                      추천량을 보여주는 초안입니다. 요청 전송·승인·출고·수령은
-                      아직 실행하지 않습니다.
+                      예상 물량입니다. 출고 전 상대 매장과 수량·소비기한을 확인해 주세요.
                     </p>
                   </Card>
                   {manager && (
@@ -648,10 +597,12 @@ export function SupplyPage({ view }: { view: "orders" | "hub" | "emergency" }) {
                         rows={p.hub_orders}
                         title="허브 재고 확보 발주안"
                       />
-                      <Card>
+                      <details className="detail-section">
+                        <summary>허브 운영안 비교</summary>
+                        <Card>
                         <div className="section-heading">
-                          <h2>무허브·허브 대안 비교</h2>
-                          <span className="badge neutral">같은 수요 예측</span>
+                          <h2>비용·공급 비교</h2>
+                          <span className="badge neutral">동일 수요 기준</span>
                         </div>
                         <div className="table-scroll">
                           <table>
@@ -660,7 +611,7 @@ export function SupplyPage({ view }: { view: "orders" | "hub" | "emergency" }) {
                                 <th>허브 수</th>
                                 <th>조건 충족</th>
                                 <th>수요 충족률</th>
-                                <th>모형 경제비용</th>
+                                <th>계산 비용</th>
                                 <th>물류비</th>
                                 <th>예상 폐기 원가</th>
                               </tr>
@@ -689,30 +640,14 @@ export function SupplyPage({ view }: { view: "orders" | "hub" | "emergency" }) {
                             </tbody>
                           </table>
                         </div>
-                        <p className="hint">
-                          경제비용은 재고 수지·보유비·배송비·허브비·미충족
-                          페널티를 포함한 모형 값이며 실제 절감액이 아닙니다.
-                          고정 운영 모드에서는 무허브가 더 저렴해도 H01 운영
-                          결과를 표시합니다.
-                        </p>
-                      </Card>
+                        </Card>
+                      </details>
                     </>
                   )}
                 </>
               )}
               {view === "emergency" && (
                 <>
-                  <div className="notice warning">
-                    <Truck size={20} />
-                    <div>
-                      <b>긴급발주는 다음날 이후를 위한 보충입니다.</b>
-                      <p>
-                        입고 지연 조건을 추가 적용합니다. 당일 품절은 별도로
-                        표시하며 긴급발주 효과를 현재 충족률에 합산하지
-                        않습니다.
-                      </p>
-                    </div>
-                  </div>
                   <DraftTable title="공급사 긴급발주 초안" rows={emergency} />
                   <Card title="입고·허브 공급 후 남는 부족">
                     <div className="table-scroll">
@@ -748,13 +683,6 @@ export function SupplyPage({ view }: { view: "orders" | "hub" | "emergency" }) {
                   </Card>
                 </>
               )}
-              <details className="assumptions">
-                <summary>계산 기준과 한계 확인</summary>
-                <p>{p.forecast_basis}</p>
-                {[...p.warnings, ...p.assumptions].map((a, i) => (
-                  <p key={i}>· {a}</p>
-                ))}
-              </details>
             </div>
           );
         }}

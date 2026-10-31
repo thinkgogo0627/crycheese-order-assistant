@@ -556,11 +556,14 @@ class Planner:
         for (supplier, _), group in groups.items():
             amount = sum(x['cost'] for x in group)
             minimum = 0 if emergency else self.data.suppliers[supplier]['minimum']
+            # Publish the threshold even for valid recommendations: edited
+            # quantities must be checked against the same supplier contract.
+            for line in group:
+                line['minimum_amount'] = minimum
+                line['order_total'] = amount
             if amount + EPS < minimum:
                 for line in group:
                     line['status'] = 'MIN_AMOUNT_REVIEW'
-                    line['minimum_amount'] = minimum
-                    line['order_total'] = amount
 
     @staticmethod
     def confirmed_qty(line, d):

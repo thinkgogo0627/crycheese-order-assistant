@@ -34,6 +34,7 @@ interface Ctx {
   draft: Scenario;
   dirty: boolean;
   update: (p: Partial<Scenario>) => void;
+  setAsOf: (date: string) => void;
   apply: () => void;
   reset: () => void;
 }
@@ -55,6 +56,11 @@ export function ScenarioProvider({ children }: { children: ReactNode }) {
   const [scenario, setScenario] = useState(initial);
   const [draft, setDraft] = useState(initial);
   const update = (p: Partial<Scenario>) => setDraft((s) => ({ ...s, ...p }));
+  const setAsOf = (date: string) => {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || date < DATE_RANGE.min || date > DATE_RANGE.max) return;
+    setScenario((s) => ({ ...s, as_of: date }));
+    setDraft((s) => ({ ...s, as_of: date }));
+  };
   const reset = () => {
     setDraft(initial);
     setScenario(initial);
@@ -66,6 +72,7 @@ export function ScenarioProvider({ children }: { children: ReactNode }) {
         draft,
         dirty: JSON.stringify(draft) !== JSON.stringify(scenario),
         update,
+        setAsOf,
         apply: () => setScenario(draft),
         reset,
       }}

@@ -160,6 +160,8 @@ export interface HubOrder {
   use_unit: string;
   safety_qty: number;
   amount: number;
+  minimum_amount: number;
+  order_total: number;
   status: string;
   basis: string;
 }

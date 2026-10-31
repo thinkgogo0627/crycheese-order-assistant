@@ -32,16 +32,12 @@ export function LoginPage() {
           <ArrowUpRight size={18} />
         </a>
         <div className="login-copy">
-          <span className="eyebrow yellow">STORE OPERATIONS</span>
-          <h1>
-            맛있는 하루는,
-            <br />
-            준비된 재고에서.
-          </h1>
+          <span className="eyebrow yellow">크라이치즈버거</span>
+          <h1>재고·발주 관리</h1>
           <p>
-            매장의 수요를 읽고, 필요한 만큼 준비합니다.
+            품목별 재고, 입고일, 허브 공급 내역을 확인합니다.
             <br />
-            우리 매장에 맞는 재고·발주 관리를 시작하세요.
+            담당 매장 계정으로 로그인해 주세요.
           </p>
           <div className="story-line">
             <span>01 수요 예측</span>
@@ -52,14 +48,13 @@ export function LoginPage() {
           </div>
         </div>
         <p className="login-foot">
-          CRYCHEESEBURGER · 재고·발주 의사결정 프로토타입
+          합성 자료를 사용하는 시연 화면입니다.
         </p>
       </section>
       <section className="login-form-side">
         <div className="login-form-wrap">
-          <span className="eyebrow">WELCOME BACK</span>
-          <h2>매장 관리 시작하기</h2>
-          <p className="muted">하나의 입구, 역할에 맞는 작업 공간.</p>
+          <h2>매장 로그인</h2>
+          <p className="muted">아래에서 시연 계정을 선택할 수 있습니다.</p>
           <form onSubmit={submit} className="login-form">
             <label>
               아이디
@@ -121,10 +116,6 @@ export function LoginPage() {
               );
             })}
           </div>
-          <p className="demo-note">
-            합성 데이터로 동작하는 시연용 로그인입니다. 실제 계정 인증·접근 권한
-            보안과 발주 전송은 포함하지 않습니다.
-          </p>
         </div>
       </section>
     </div>
