@@ -131,7 +131,7 @@ export function ScenarioPanel() {
             <input
               type="number"
               min="0"
-              max="1000000"
+              max="100000"
               required
               value={s.transfer_cost}
               onChange={(e) => update({ transfer_cost: +e.target.value })}

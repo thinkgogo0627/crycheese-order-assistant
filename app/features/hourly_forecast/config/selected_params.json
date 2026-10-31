@@ -1,0 +1,170 @@
+{
+  "description": "Chronological July 2026 validation; repeatedly inspected August–September 2026 evaluation. Forecasting latent demand using earlier fulfilled POS sales.",
+  "baseline": {
+    "recent_days": 7,
+    "same_weekdays": 4,
+    "hour_profile_days": 84,
+    "hour_pseudo": 24.0,
+    "weights": [
+      0.6,
+      0.2,
+      0.2
+    ],
+    "area_history_days": 56
+  },
+  "rolling": {
+    "strength": 0.8,
+    "store_smooth": 4.0,
+    "menu_smooth": 1.0,
+    "menu_gain": 0.2,
+    "store_low": 0.5,
+    "store_high": 1.0,
+    "menu_low": 0.5,
+    "menu_high": 1.35,
+    "delta_cap": 0.1
+  },
+  "shortage_protective_illustrative": {
+    "under_prediction_weight": 1.5,
+    "parameters": {
+      "strength": 0.8,
+      "store_smooth": 16.0,
+      "menu_smooth": 1.0,
+      "menu_gain": 0.2,
+      "store_low": 0.5,
+      "store_high": 1.3,
+      "menu_low": 0.5,
+      "menu_high": 1.35,
+      "delta_cap": 0.06
+    }
+  },
+  "selected_on": "2026-07-01..2026-07-31",
+  "evaluated_on": "2026-08-01..2026-09-30",
+  "metrics": {
+    "july_validation": {
+      "original_baseline": {
+        "hour_wape": 54.30420673332124,
+        "day_wape": 26.28234487160766
+      },
+      "tuned_baseline": {
+        "hour_wape": 53.65173379690291,
+        "day_wape": 25.858233381930596
+      },
+      "original_end_to_end": {
+        "next_hour_wape": 52.515399003630684,
+        "next_hour_mae": 0.7735010059696055
+      },
+      "original_cumulative_on_tuned_baseline": {
+        "next_hour_wape": 51.86772743601765,
+        "next_hour_mae": 0.763961430557602
+      },
+      "tuned_cumulative": {
+        "next_hour_wape": 51.08255967001119,
+        "next_hour_mae": 0.7523966692041004
+      },
+      "tuned_baseline_next_hour": {
+        "next_hour_wape": 53.04209477650762,
+        "next_hour_mae": 0.781258724998496
+      },
+      "shortage_protective": {
+        "next_hour_wape": 51.35986126807892,
+        "next_hour_mae": 0.7564810533872527
+      }
+    },
+    "aug_sep_holdout": {
+      "original_baseline": {
+        "hour_wape": 54.38530437814601,
+        "day_wape": 26.79128553501859
+      },
+      "tuned_baseline": {
+        "hour_wape": 54.02154511788278,
+        "day_wape": 26.993877907755856
+      },
+      "original_end_to_end": {
+        "next_hour_wape": 52.18107262569672,
+        "next_hour_mae": 0.8149563581175421
+      },
+      "original_cumulative_on_tuned_baseline": {
+        "next_hour_wape": 51.69295415128643,
+        "next_hour_mae": 0.807332995196493
+      },
+      "tuned_cumulative": {
+        "next_hour_wape": 51.16528152190639,
+        "next_hour_mae": 0.7990918812699446
+      },
+      "tuned_baseline_next_hour": {
+        "next_hour_wape": 53.41061187375874,
+        "next_hour_mae": 0.8341591222107768
+      },
+      "shortage_protective": {
+        "next_hour_wape": 51.03295480006852,
+        "next_hour_mae": 0.7970252218878313
+      }
+    },
+    "per_store_holdout": {
+      "S01": {
+        "records": 9760,
+        "no_adjust_wape": 46.097495755510906,
+        "original_adjust_wape": 43.98801175055313,
+        "calibrated_adjust_wape": 43.48760561621838
+      },
+      "S02": {
+        "records": 9516,
+        "no_adjust_wape": 58.348177514886295,
+        "original_adjust_wape": 56.82362065897507,
+        "calibrated_adjust_wape": 55.77082479096865
+      },
+      "S03": {
+        "records": 9760,
+        "no_adjust_wape": 66.58776595922684,
+        "original_adjust_wape": 65.65587056024742,
+        "calibrated_adjust_wape": 65.64466415260661
+      }
+    },
+    "month_8": {
+      "original_end_to_end_wape": 54.04582637171577,
+      "tuned_end_to_end_wape": 52.60149838237017,
+      "protective_end_to_end_wape": 53.011265699172284
+    },
+    "month_9": {
+      "original_end_to_end_wape": 50.53393414718519,
+      "tuned_end_to_end_wape": 49.89667001789028,
+      "protective_end_to_end_wape": 49.285511197217986
+    },
+    "bootstrap": {
+      "week_blocks": 10,
+      "n_draws": 1500,
+      "delta_wape_old_minus_tuned_95pct_interval": [
+        0.27169872324358296,
+        1.7772090181491347
+      ],
+      "positive_improvement_rate": 0.9966666666666667,
+      "protective_delta_wape_old_minus_new_95pct_interval": [
+        0.7959225360000047,
+        1.5952851301023108
+      ]
+    },
+    "store_hour_holdout": {
+      "observations": 1952,
+      "old_wape": 19.37846958419253,
+      "balanced_wape": 20.197783286160917,
+      "protective_wape": 18.01406207779979
+    },
+    "forecast_bias": {
+      "old_original": {
+        "mean_signed_error": -0.010923396549042196,
+        "total_underforecast_menu_units": 11990.12227824947,
+        "total_overforecast_menu_units": 11672.950536051481
+      },
+      "tuned": {
+        "mean_signed_error": -0.12092259277898354,
+        "total_underforecast_menu_units": 13356.770134242337,
+        "total_overforecast_menu_units": 9845.661730311771
+      },
+      "protective": {
+        "mean_signed_error": -0.01038276080695771,
+        "total_underforecast_menu_units": 11721.949092762949,
+        "total_overforecast_menu_units": 11420.475249972123
+      }
+    }
+  }
+}

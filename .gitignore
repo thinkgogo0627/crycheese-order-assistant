@@ -13,3 +13,7 @@ data/private/
 *.zip
 frontend/node_modules/
 frontend/dist/
+
+# local tuning and test artifacts
+work/
+.pytest_cache/

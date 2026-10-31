@@ -12,6 +12,7 @@ import {
 import type { Role } from "@/lib/auth";
 import { InventoryPage, ForecastPage } from "@/pages/PlannerPage";
 import { OverviewPage, SupplyPage } from "@/pages/OperationsPage";
+import { IntradayPage } from "@/pages/IntradayPage";
 import { StatusPage } from "@/pages/StatusPage";
 export interface Feature {
   path: string;
@@ -57,6 +58,12 @@ export const FEATURES: Feature[] = [
     label: "수요 예측",
     icon: TrendingUp,
     element: <ForecastPage />,
+  },
+  {
+    path: "/intraday",
+    label: "시간별 수요",
+    icon: TrendingUp,
+    element: <IntradayPage forecastOnly />,
   },
   {
     path: "/status",
