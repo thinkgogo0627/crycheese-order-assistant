@@ -107,8 +107,8 @@ export function ComparePage() {
       <Summary p={p}/>
       <Card title="기간 전체 · 3개 매장 비교">
         <div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead><tr className="border-b text-xs text-slate-500"><th className="py-2">지표</th>{p.comparison.map(r=><th className="p-2 text-right" key={r.mode}>{MODES[r.mode]}</th>)}</tr></thead>
-        <tbody>{[
-          ['수요 충족률', (r:PlanResponse['comparison'][number])=>r.fill_rate.toFixed(2)+'%'],
+        <tbody>{([
+          ['수요 충족률', r=>r.fill_rate.toFixed(2)+'%'],
           ['예상 매출',r=>KRW(r.expected_revenue)],
           ['발주 구매액',r=>KRW(r.purchase_cost)],
           ['이동 비용',r=>KRW(r.transport_cost)],
@@ -118,7 +118,7 @@ export function ComparePage() {
           ['운송 횟수',r=>r.trip_count+'회'],
           ['기말 유효재고 가치',r=>KRW(r.closing_value)],
           ['기여도 근사 (참고)',r=>KRW(r.contribution_after_waste_and_transport)],
-        ].map(([title,fn],index)=><tr key={index} className="border-b border-slate-100"><td className="py-3 font-medium">{String(title)}</td>{p.comparison.map(r=><td key={r.mode} className="p-2 text-right">{(fn as (x:typeof r)=>string)(r)}</td>)}</tr>)}</tbody>
+        ] as [string, (r: PlanResponse['comparison'][number]) => string][]).map(([title,fn],index)=><tr key={index} className="border-b border-slate-100"><td className="py-3 font-medium">{String(title)}</td>{p.comparison.map(r=><td key={r.mode} className="p-2 text-right">{(fn as (x:typeof r)=>string)(r)}</td>)}</tr>)}</tbody>
         </table></div>
         <p className="mt-3 text-xs text-slate-500">기여도 근사 = 예상 매출 − 사용 식자재 원가 − 만료 폐기원가 − 이동비. 식자재 구매액을 다시 차감하지 않으며, 다른 인건비·점포 고정비는 미반영. 시뮬레이션 수치로 실제 절감액이 아닙니다.</p>
       </Card>
