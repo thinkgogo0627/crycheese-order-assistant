@@ -1,6 +1,7 @@
 """Registry adapter. No FastAPI dependencies; no real orders or transfers."""
 from app.core.scenario import Scenario
-from .runtime import get_engine
+from .runtime import get_engine, Scenario as RuntimeScenario
+from .trend import build_trend
 from .intraday import HourlyPlanner, IntradayScenario
 from .calibration import baseline_params, rolling_params, read_calibration
 from .schemas import HourlyResponse, IntradayResponse
@@ -20,6 +21,31 @@ def forecast(sc: Scenario):
     result = HourlyPlanner(get_engine()).rolling(request(sc))
     for row in result['timeline']:
         row['basis'] = f"{len(row['observed_hours'])}개 종료 시간의 누적 실판매 {row['observed_sold_cumulative']}개로 메뉴별 기본예측을 보정"
+    engine = get_engine()
+    planner = HourlyPlanner(engine)
+    request_sc = request(sc)
+    _, _, hourly, _ = engine.forecast_bundle(RuntimeScenario(
+        as_of=sc.as_of, store_id=sc.store_id, horizon_days=2,
+        demand_multiplier=sc.demand_multiplier,
+        promotion_multiplier=sc.promotion_multiplier, forecast_profile=sc.forecast_profile))
+    now = int(sc.decision_time[:2])
+    actual, _ = planner._actual_sales(request_sc, now * 60)
+    opening = int(engine.stores[sc.store_id]['open_hour'])
+    closing = int(engine.stores[sc.store_id]['close_hour'])
+    options = rolling_params(sc.forecast_profile)
+    if sc.adjustment_strength is not None:
+        options['strength'] = sc.adjustment_strength
+    trend = build_trend(
+        store_id=sc.store_id, day=sc.as_of.isoformat(), menus=list(engine.menus),
+        baseline={(m, h): hourly.get((sc.as_of, sc.store_id, m, h), 0.)
+                  for m in engine.menus for h in range(opening, closing)},
+        open_hour=opening, close_hour=closing, decision_time=sc.decision_time,
+        completed_sales={h: {m: actual.get((sc.store_id, m, h), 0.) for m in engine.menus}
+                         for h in range(opening, min(now, closing))}, **options)
+    trend['rows'] = [row for row in trend['rows'] if row['hour'] < max(now, opening) + sc.horizon_hours]
+    for row in trend['rows']:
+        row['basis'] = '완료 시간의 순판매 실적' if row['actual'] is not None else '누적 POS 보정 예측 및 예측값의 ±10% 표시 범위'
+    result['trend'] = trend
     result['assumptions'] = LIMITS
     result['calibration'] = {
         'profile': sc.forecast_profile,
