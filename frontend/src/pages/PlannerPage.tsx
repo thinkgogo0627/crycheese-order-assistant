@@ -1,14 +1,15 @@
 import { useQuery } from '@tanstack/react-query'
-import { AlertTriangle, ArrowLeftRight, Package, ShoppingCart, TrendingUp } from 'lucide-react'
+import { ArrowLeftRight, Package, ShoppingCart, TrendingUp } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { apiPost } from '@/lib/api'
 import { useScenario } from '@/lib/scenario'
 import { Card, PageHeader } from '@/components/ui'
+import { OrderDraft } from '@/components/OrderDraft'
 import type { PlanResponse } from '@/types/api'
 
 const KRW = (v: number) => Math.round(v).toLocaleString('ko-KR') + '원'
 const NUM = (v: number) => v.toLocaleString('ko-KR', {maximumFractionDigits: 1})
-const MODES: Record<string,string> = {independent: 'M0 · 매장별 독립 발주', pooled: 'M1 · 공동발주',shared: 'M2 · 공동발주 + 재고 이동'}
+const MODES: Record<string,string> = {independent: 'M0 · 매장별 독립 발주', independent_transfer: 'M0+ · 매장별 발주 + 재고 이동', pooled: 'M1 · 공동발주',shared: 'M2 · 공동발주 + 재고 이동'}
 
 export function usePlan() {
   const { scenario } = useScenario()
@@ -19,9 +20,9 @@ export function usePlan() {
   })
 }
 
-function DashboardBoundary({ children }: { children: (p:PlanResponse) => ReactNode }) {
+function DashboardBoundary({ children, hidePrevious = false }: { children: (p:PlanResponse) => ReactNode; hidePrevious?: boolean }) {
   const q = usePlan()
-  if (q.isPending) return <Card title="계산 중">원본 CSV 기반으로 계산 중입니다…</Card>
+  if (q.isPending || (hidePrevious && q.isPlaceholderData)) return <Card title="계산 중">선택한 조건의 추천을 계산하고 있습니다…</Card>
   if (q.isError) return <div className="rounded-lg border border-red-200 bg-red-50 p-5 text-sm text-red-700">계산 실패: {q.error.message}. 백엔드 실행 여부와 비공개 CSV 경로를 확인하세요.</div>
   if (!q.data) return null
   return <div className={q.isFetching ? 'opacity-70' : ''}>{children(q.data)}{q.isFetching && <p className="mt-3 text-xs text-amber-700">조건 변경을 계산하고 있습니다…</p>}</div>
@@ -44,25 +45,18 @@ function Summary({p}:{p:PlanResponse}) {
 
 export function OrdersPage() {
   return <>
-    <PageHeader title="발주 추천" description="미래 수요·기존 재고·미입고 발주를 반영하고, 최소발주금액과 포장단위를 적용합니다." />
-    <DashboardBoundary>{(p)=><>
-      <Summary p={p}/>
-      <Card title="현재 추천과 한계">
-        <p className="text-sm leading-6"><b>{MODES[p.recommended_mode]}</b>을 현재 조건의 추천안으로 표시합니다. 서비스 수준 {p.service_target}%를 충족하는 정책 중 예상 기여도가 높은 정책을 선택하며, 어떤 정책도 기준을 달성하지 못하면 충족률이 높은 정책을 표시합니다.</p>
-        <p className="mt-2 text-xs text-amber-800">실제 재고가 아니라 과거 스냅샷 기반 시뮬레이션이며, 시스템에서 주문을 실행하지 않습니다.</p>
-      </Card>
-      <div className="mt-4"><Card title={`발주 초안 · 판단일 ${p.as_of}`}>
-        {p.all_orders.length===0?<p className="text-sm text-slate-500">해당 일자의 발주 초안 없음. 발주 요일·최소금액 미달·재고 충분 여부를 확인하세요.</p>:<div className="overflow-x-auto"><table className="w-full text-left text-sm">
-          <thead><tr className="border-b text-xs text-slate-500"><th className="py-2">공급사</th><th>품목</th><th>배분 대상</th><th>발주량</th><th>입고일</th><th className="text-right">금액</th></tr></thead>
-          <tbody>{p.all_orders.map((x,j)=><tr className="border-b border-slate-100" key={j}>
-            <td className="py-2">{x.supplier}</td><td>{x.ingredient}</td><td>{x.store_id==='ALL'?'3개 매장 통합':x.store_id}<div className="text-[11px] text-slate-400">{Object.entries(x.allocated).map(([k,v])=>`${k} ${NUM(v)}`).join(' / ')}</div></td>
-            <td>{x.order_qty}{x.order_unit}</td><td>{x.arrival_date}</td><td className="text-right">{KRW(x.amount)}</td>
-          </tr>)}</tbody>
-        </table></div>}
-      </Card></div>
-      {p.blocked.length>0 && <div className="mt-4"><Card title="공급사 제약으로 보류된 주문">
-        <div className="space-y-2">{p.blocked.slice(0,8).map((x,i)=><p className="text-xs text-amber-900" key={i}><AlertTriangle className="mr-1 inline" size={13}/>{x.date} · {x.supplier} · {x.store}: {KRW(x.amount)} / 최소 {KRW(x.minimum)}</p>)}</div>
-      </Card></div>}
+    <PageHeader title="발주 추천" description="선택한 매장의 발주 품목과 수량을 먼저 확인하세요. 예정 입고와 공급사 조건을 반영한 초안입니다." />
+    <DashboardBoundary hidePrevious>{(p)=><>
+      <OrderDraft key={`${p.store_id}:${p.as_of}`} plan={p}/>
+      <details className="mt-5 rounded-xl border border-slate-200 bg-white p-4">
+        <summary className="cursor-pointer text-sm font-semibold text-slate-600">전체 매장 정책 요약·계산 가정</summary>
+        <div className="mt-4">
+          <p className="mb-3 text-xs text-slate-500">아래 수치는 {p.store_id}만의 발주 금액이 아니라, 예측 기간 전체·3개 매장 정책 비교입니다.</p>
+          <Summary p={p}/>
+          <p className="text-sm">현재 추천 방식: <b>{MODES[p.recommended_mode] ?? p.recommended_mode}</b></p>
+          <ul className="mt-3 list-disc space-y-2 pl-4 text-xs leading-5 text-slate-500">{p.assumptions.map((a,i)=><li key={i}>{a}</li>)}</ul>
+        </div>
+      </details>
     </>}</DashboardBoundary>
   </>
 }

@@ -2,8 +2,10 @@ import { NavLink, Outlet } from 'react-router-dom'
 import { FEATURES } from '@/features'
 import { ApiStatus } from './ApiStatus'
 import { ScenarioPanel } from './ScenarioPanel'
+import { useScenario } from '@/lib/scenario'
 
 export function Layout() {
+  const { scenario } = useScenario()
   return (
     <div className="flex min-h-screen flex-col md:flex-row">
       <aside className="w-full shrink-0 border-b border-slate-200 bg-white p-4 md:w-64 md:border-b-0 md:border-r">
@@ -23,9 +25,13 @@ export function Layout() {
             </NavLink>
           ))}
         </nav>
-        <ScenarioPanel />
+        <div className="hidden md:block"><ScenarioPanel /></div>
+        <details className="md:hidden">
+          <summary className="cursor-pointer text-sm font-medium text-slate-700">{scenario.store_id} · {scenario.as_of} · 조건 변경</summary>
+          <div className="mt-4"><ScenarioPanel /></div>
+        </details>
       </aside>
-      <main className="flex-1 p-4 md:p-8">
+      <main className="min-w-0 flex-1 p-4 md:p-8">
         <Outlet />
       </main>
     </div>

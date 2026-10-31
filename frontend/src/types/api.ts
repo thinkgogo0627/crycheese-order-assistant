@@ -14,13 +14,13 @@ export interface HealthResponse { ok: boolean; tables: Record<string, number> }
 export interface ApiErrorBody { error?: { code: string; message: string }; detail?: string }
 export interface ForecastItem { menu_id: string; menu: string; qty: number; price: number }
 export interface IngredientItem { ingredient_id: string; ingredient: string; unit: string; predicted_today: number; current_stock: number; opening_stock?: number; received_today?: number; inventory_basis?: string; expiry_nearest: string | null }
-export interface OrderLine { supplier_id: string; supplier: string; store_id: string; ingredient_id: string; ingredient: string; order_date: string; arrival_date: string; order_qty: number; order_unit: string; use_qty: number; amount: number; allocated: Record<string, number> }
+export interface OrderLine { supplier_id: string; supplier: string; store_id: string; ingredient_id: string; ingredient: string; order_date: string; arrival_date: string; order_qty: number; order_unit: string; use_qty: number; amount: number; allocated: Record<string, number>; unit?: string; reason?: string }
 export interface TransferLine { ingredient_id: string; ingredient: string; qty: number; unit: string; estimated_food_value: number }
 export interface TransferRoute { from_store: string; to_store: string; depart: string; arrive: string; minutes: number; trip_cost: number; items: TransferLine[]; estimated_food_value: number }
 export interface LotProjection { lot_id: string; receipt_date: string; last_use_date: string; current_qty: number; expected_used_qty: number; expected_expiry_qty: number }
 export interface Alert { type: string; store: string; item: string; name: string; qty: number; unit: string; date: string; detail?: string; expiring_qty?: number; expected_use_before_expiry_qty?: number; expected_expiry_qty?: number; expected_expiry_cost?: number; lots?: LotProjection[] }
 export interface PlanComparison { mode: string; purchase_cost: number; transport_cost: number; waste_cost: number; expected_revenue: number; lost_qty: number; fill_rate: number; ordered_packs: number; trip_count: number; closing_value: number; contribution_after_waste_and_transport: number }
-export interface Blocked { date: string; supplier: string; store: string; amount: number; minimum: number; reason: string }
+export interface Blocked { date: string; supplier: string; store: string; amount: number; minimum: number; reason: string; action?: string }
 export interface PlanResponse {
   as_of: string
   store_id: string
