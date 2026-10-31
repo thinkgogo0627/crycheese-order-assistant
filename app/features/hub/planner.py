@@ -305,7 +305,7 @@ def defaults(data):
                 split_allowed=False, hub_order_mode='regular', delay_days=0, evaluation_days=14,
                 capacity_source='assumed_net_spare_capacity',
                 matrix={}, hub_stock={}, forecast_overrides={}, baseline_safety_overrides={},
-                baseline_order_overrides={})
+                baseline_order_overrides={}, store_ids=None, assigned_hub=False)
 
 
 def clean_config(data, submitted):
@@ -316,6 +316,9 @@ def clean_config(data, submitted):
     if unknown:
         raise ValueError(f'알 수 없는 입력: {sorted(unknown)}')
     cfg.update(submitted)
+    if cfg['store_ids'] is not None:
+        if not isinstance(cfg['store_ids'], list) or not cfg['store_ids'] or len(set(cfg['store_ids'])) != len(cfg['store_ids']) or set(cfg['store_ids'])-set(data.stores):
+            raise ValueError('허브 그룹은 중복 없는 실제 매장 ID 배열이어야 합니다.')
     cfg['as_of'] = str(day(cfg['as_of']))
     origin = day(cfg['as_of'])
     if not date(2026, 7, 1) <= origin <= data.end+timedelta(days=1):
@@ -374,7 +377,7 @@ def clean_config(data, submitted):
 class Planner:
     def __init__(self, data, cfg):
         self.data, self.cfg, self.origin = data, cfg, day(cfg['as_of'])
-        sources = sorted(data.stores)
+        sources = cfg['store_ids'] or sorted(data.stores)
         self.stores = []
         for i in range(cfg['store_count']):
             source = sources[i % len(sources)]
@@ -859,9 +862,18 @@ class Planner:
                         choices=[self.evaluate(sorted(group),hub,a) for a in self.cfg['alpha_grid']]
                         parts.append(min(choices,key=lambda c:(not c['feasible'],not c['structural_feasible'],c['economic_cost'])))
                     self.keep(alternatives,self.combine(parts))
-        feasible=[x for x in alternatives.values() if x['feasible']]
+        candidates=list(alternatives.values())
+        if self.cfg['assigned_hub']:
+            # A deployed group must be evaluated as assigned, even when the
+            # unconstrained optimizer prefers closing it or serving fewer stores.
+            choices=[self.evaluate(list(range(n)), 'H01', a) for a in self.cfg['alpha_grid']]
+            viable=[c for c in choices if c['feasible']]
+            fixed=min(viable,key=lambda c:c['economic_cost']) if viable else min(
+                choices,key=lambda c:(not c['structural_feasible'],-c['fill_rate'],c['economic_cost']))
+            candidates=[self.combine([fixed])]
+        feasible=[x for x in candidates if x['feasible']]
         chosen=min(feasible,key=lambda x:x['economic_cost']) if feasible else None
-        diagnostic=min(alternatives.values(),key=lambda x:(not x['structural_feasible'],-x['fill_rate'],x['economic_cost']))
+        diagnostic=min(candidates,key=lambda x:(not x['structural_feasible'],-x['fill_rate'],x['economic_cost']))
         selected=chosen or diagnostic
         detail=[]
         for part in selected['groups']:

@@ -1,56 +1,154 @@
-import { DATE_RANGE, STORES, useScenario } from '@/lib/scenario'
-
-const field = 'mt-1 w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm'
-
+import { DATE_RANGE, useScenario } from "@/lib/scenario";
+import { useAuth } from "@/lib/auth";
 export function ScenarioPanel() {
-  const { scenario: s, update, reset } = useScenario()
+  const { draft: s, update, apply, reset, dirty } = useScenario();
+  const { account } = useAuth();
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-slate-700">시뮬레이션 조건</h2>
-        <button onClick={reset} className="text-xs text-slate-500 hover:text-slate-900">초기화</button>
+    <form
+      className="scenario-panel"
+      onSubmit={(e) => {
+        e.preventDefault();
+        apply();
+      }}
+    >
+      <div className="section-heading">
+        <h2>분석 조건</h2>
+        <button type="button" className="text-button" onClick={reset}>
+          초기화
+        </button>
       </div>
-      <label className="block text-xs text-slate-600">판단 기준일 · 오전 09:00
-        <input type="date" className={field} min={DATE_RANGE.min} max={DATE_RANGE.max}
-          value={s.as_of} onChange={(e) => e.target.value && update({ as_of: e.target.value })} />
+      <label>
+        판단 기준일
+        <input
+          type="date"
+          min={DATE_RANGE.min}
+          max={DATE_RANGE.max}
+          required
+          value={s.as_of}
+          onInput={(e) => update({ as_of: e.currentTarget.value })}
+        />
       </label>
-      <label className="block text-xs text-slate-600">매장 선택
-        <select className={field} value={s.store_id} onChange={(e) => update({ store_id: e.target.value })}>
-          {STORES.map((st) => <option key={st.id} value={st.id}>{st.id} · {st.name}</option>)}
-        </select>
-      </label>
-      <label className="block text-xs text-slate-600">예측 기간 · {s.horizon_days}일
-        <input type="range" min={1} max={14} className="mt-1 w-full"
-          value={s.horizon_days} onChange={(e) => update({ horizon_days: Number(e.target.value) })} />
-      </label>
-      <label className="block text-xs text-slate-600">수요 배율 · ×{s.demand_multiplier.toFixed(1)}
-        <input type="range" min={0.5} max={2} step={0.1} className="mt-1 w-full"
-          value={s.demand_multiplier} onChange={(e) => update({ demand_multiplier: Number(e.target.value) })} />
-      </label>
-      <label className="block text-xs text-slate-600">입고 지연 · 가정
-        <select className={field} value={s.delay_days} onChange={(e) => update({ delay_days: Number(e.target.value) })}>
-          {[0,1,2,3].map((d) => <option key={d} value={d}>{d === 0 ? '없음' : `${d}일`}</option>)}
-        </select>
-      </label>
-      <label className="block text-xs text-slate-600">목표 수요 충족률
-        <select className={field} value={s.service_level ?? 'auto'} onChange={(e) => update({ service_level: e.target.value === 'auto' ? null : Number(e.target.value) })}>
-          <option value="auto">기본 90%</option>
-          {[0.8,0.9,0.95,0.98].map((a) => <option key={a} value={a}>{Math.round(a*100)}%</option>)}
-        </select>
-      </label>
-      <div className="rounded-md border border-emerald-100 bg-emerald-50 p-3 text-xs text-emerald-900">
-        <p className="font-semibold">지점 간 이동 · 30분</p>
-        <p className="mt-1 text-emerald-800">모든 지점 간 이동시간 30분으로 고정. 09:00 출발 → 09:30 도착, 개점 전 이동 가정.</p>
+      <div className="form-pair">
+        <label>
+          예측 기간
+          <select
+            value={s.horizon_days}
+            onChange={(e) => update({ horizon_days: +e.target.value })}
+          >
+            {[1, 3, 7, 14].map((d) => (
+              <option key={d} value={d}>
+                {d}일
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          입고 지연
+          <select
+            value={s.delay_days}
+            onChange={(e) => update({ delay_days: +e.target.value })}
+          >
+            {[0, 1, 2, 3].map((d) => (
+              <option key={d} value={d}>
+                {d}일
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
-      <label className="block text-xs text-slate-600">운송 1회당 추가 비용 · 원
-        <input type="number" min={0} max={100000} step={100} className={field}
-          value={s.transfer_cost} onChange={(e) => update({ transfer_cost: Math.max(0, Number(e.target.value)||0) })} />
-        <span className="mt-1 block text-[11px] text-slate-400">기본 100원은 임의 가정이며 실제 운임이 아닙니다.</span>
-      </label>
-      <label className="flex items-start gap-2 text-xs text-slate-600">
-        <input type="checkbox" className="mt-0.5" checked={s.can_split_pack} onChange={(e) => update({can_split_pack: e.target.checked})} />
-        <span>공동발주 후 포장 소분·매장별 배분 허용 (미확인 가정)</span>
-      </label>
-    </div>
-  )
+      <div className="form-pair">
+        <label>
+          수요 배율
+          <input
+            type="number"
+            step="0.1"
+            min="0.5"
+            max="2"
+            required
+            value={s.demand_multiplier}
+            onChange={(e) => update({ demand_multiplier: +e.target.value })}
+          />
+        </label>
+        <label>
+          허브 계산 목표 충족률
+          <select
+            value={s.service_level ?? 0.9}
+            onChange={(e) => update({ service_level: +e.target.value })}
+          >
+            {[0.8, 0.9, 0.95, 0.98].map((v) => (
+              <option key={v} value={v}>
+                {Math.round(v * 100)}%
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+      {account?.role === "hub" && (
+        <>
+          <label>
+            허브 운영 방식
+            <select
+              value={s.hub_policy}
+              onChange={(e) =>
+                update({ hub_policy: e.target.value as "auto" | "assigned" })
+              }
+            >
+              <option value="assigned">H01 · S01/S02 고정 운영</option>
+              <option value="auto">무허브 포함 대안 탐색</option>
+            </select>
+          </label>
+          <div className="form-pair">
+            {(["chilled", "frozen", "ambient"] as const).map((zone, i) => {
+              const key = `${zone}_capacity_liters` as const;
+              return (
+                <label key={zone}>
+                  {["냉장", "냉동", "상온"][i]} 여유 공간 · L
+                  <input
+                    type="number"
+                    min="0"
+                    max="100000"
+                    required
+                    value={s[key]}
+                    onChange={(e) => update({ [key]: +e.target.value })}
+                  />
+                </label>
+              );
+            })}
+            <label>
+              허브 운영비 · 원/일
+              <input
+                type="number"
+                min="0"
+                max="1000000"
+                required
+                value={s.hub_daily_cost}
+                onChange={(e) => update({ hub_daily_cost: +e.target.value })}
+              />
+            </label>
+          </div>
+          <label>
+            배송비 · 원/회
+            <input
+              type="number"
+              min="0"
+              max="1000000"
+              required
+              value={s.transfer_cost}
+              onChange={(e) => update({ transfer_cost: +e.target.value })}
+            />
+          </label>
+        </>
+      )}
+      <p className="hint">
+        {account?.role === "independent"
+          ? "S03 단독 계산 · 허브 공급과 매장 간 이동 제외"
+          : "S01 허브 ↔ S02 편도 30분 가정 · 준비·검수 별도 15분"}
+        <br />
+        포장 소분은 허용하지 않습니다.
+      </p>
+      <button className="button primary" type="submit">
+        {dirty ? "변경 조건 적용" : "다시 계산"}
+      </button>
+    </form>
+  );
 }

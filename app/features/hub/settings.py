@@ -1,7 +1,7 @@
 """Prototype operating assumptions, owned by this feature.
 
-The public input remains core.scenario.Scenario. Additional UI inputs require
-the integration owner's change to that shared contract; none are added here.
+Shared defaults are supplemented by the integrated core.scenario.Scenario
+contract. No feature-specific request model is exposed.
 """
 SETTINGS = {
     'store_count': 3,

@@ -76,7 +76,16 @@ def compute(sc: Scenario) -> HubResponse:
     source = common_data()
     submitted = {**SETTINGS, 'as_of': str(sc.as_of),
         'service_target': sc.service_level or .95, 'delay_days': sc.delay_days,
-        'demand_multiplier': sc.demand_multiplier, 'evaluation_days':sc.horizon_days}
+        'demand_multiplier': sc.demand_multiplier, 'evaluation_days':sc.horizon_days,
+        'max_hubs':0 if sc.hub_policy == 'none' else sc.max_hubs, 'assigned_hub':sc.hub_policy == 'assigned', 'trip_cost':sc.transfer_cost, 'hub_daily_cost':sc.hub_daily_cost,
+        'split_allowed':sc.can_split_pack,
+        'capacity_liters':dict(chilled=sc.chilled_capacity_liters,frozen=sc.frozen_capacity_liters,ambient=sc.ambient_capacity_liters)}
+    if sc.hub_store_ids is not None:
+        submitted.update(store_ids=list(sc.hub_store_ids),store_count=len(sc.hub_store_ids))
+    if sc.hub_host_store_id is not None:
+        if sc.hub_store_ids is not None and sc.hub_host_store_id not in sc.hub_store_ids:
+            raise AppError('invalid_hub_host','허브 매장은 그룹에 포함되어야 합니다.',422)
+        submitted['matrix']={'H01':{sc.hub_host_store_id:0}}
     try:
         cfg = clean_config(source, submitted)
         planner = Planner(source, cfg)
@@ -89,8 +98,8 @@ def compute(sc: Scenario) -> HubResponse:
         groups.append(HubGroup(hub_id=group['hub'], members=group['members'], alpha=group['alpha'],
             capacity_ok=group['capacity_ok'], fleet_ok=group['fleet_ok'], peak_liters=group['peak_liters'],
             outside_30_minutes=group['outside_30_minutes'], basis='30분 도달·입고 직후 최대 보관량·일일 차량 여력을 검사한 그룹'))
-        stores.extend(HubOrder(**order_row(line)) for line in group['store_orders'])
-        hubs.extend(HubOrder(**order_row(line)) for line in group['hub_orders'])
+        stores.extend(HubOrder(**order_row(line)) for line in group['store_orders'] if line['units'] > 0)
+        hubs.extend(HubOrder(**order_row(line)) for line in group['hub_orders'] if line['units'] > 0)
         for row in group['forecast_scenario']['transfers']:
             transfers.append(HubTransfer(date=row['date'], hub_id=row['hub'], store_id=row['store'],
                 ingredient_id=row['item'], ingredient_name=source.ingredients[row['item']]['name'],
@@ -115,7 +124,7 @@ def compute(sc: Scenario) -> HubResponse:
     if cfg['store_count'] > 3:
         warnings.append('4번째 이후 매장은 제공 3개 매장 프로필의 복제 시나리오입니다.')
     return HubResponse(status=result['recommendation_status'], forecast_basis='공통 EWMA×요일×공휴일×행사 순수요. 무허브·허브 대안에서 같은 예측과 잔차 기반 안전재고를 사용',
-        conditions={k:cfg[k] for k in SETTINGS},
+        conditions={**{k:cfg[k] for k in SETTINGS}, 'store_ids':planner.ids, 'hub_host_store_id':sc.hub_host_store_id, 'hub_policy':sc.hub_policy},
         recommended_hub_count=result['recommended']['hub_count'] if result['recommended'] else None,
         evaluation_start=sc.as_of, evaluation_end_exclusive=result['horizon']['end_exclusive'],
         service_target=cfg['service_target'], fill_rate=chosen['fill_rate'], groups=groups,

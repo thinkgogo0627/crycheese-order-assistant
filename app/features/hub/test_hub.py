@@ -112,3 +112,31 @@ def test_minimum_amount_review_is_not_received():
     p.minimum_check([line],False)
     assert line['status']=='MIN_AMOUNT_REVIEW'
     assert p.confirmed_qty(line,date(2026,9,8))==0
+
+
+def test_demo_role_scopes_and_assigned_hub():
+    scope=dict(hub_store_ids=('S01','S02'),hub_host_store_id='S01',hub_policy='assigned',max_hubs=1)
+    p=compute(Scenario(**scope))
+    assert len(p.groups)==1 and p.groups[0].hub_id=='H01'
+    assert p.groups[0].members==['S01','S02']
+    assert all(x.store_id in ('S01','S02') for x in p.store_orders+p.shortages+p.emergency_orders+p.transfers)
+    solo=compute(Scenario(store_id='S03',hub_store_ids=('S03',),hub_policy='none',max_hubs=0))
+    assert [x.members for x in solo.groups]==[['S03']]
+    assert not solo.hub_orders and not solo.transfers
+    assert all(x.store_id=='S03' for x in solo.store_orders+solo.shortages+solo.emergency_orders)
+    # Insufficient capacity must not silently switch a fixed group to no-hub.
+    constrained=compute(Scenario(**scope,chilled_capacity_liters=0,frozen_capacity_liters=0,ambient_capacity_liters=0))
+    assert constrained.groups[0].hub_id=='H01'
+    if any(sum(g.peak_liters.values())>0 for g in constrained.groups):
+        assert constrained.status=='NO_FEASIBLE_PLAN'
+
+
+@pytest.mark.parametrize('patch', [
+    {'hub_store_ids':[]}, {'hub_store_ids':['S01','S01']},
+    {'store_id':'S03','hub_store_ids':['S01','S02']},
+    {'hub_store_ids':['S01'],'hub_host_store_id':'S03'},
+    {'hub_policy':'assigned','max_hubs':0},
+])
+def test_invalid_role_scope_is_rejected(patch):
+    r=client.post('/api/hub',json=patch)
+    assert r.status_code==422 and 'error' in r.json()

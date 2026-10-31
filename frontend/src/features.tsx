@@ -1,13 +1,67 @@
-import type { ReactNode } from 'react'
-import { Activity, Bell, ClipboardList, TrendingUp, ChartColumnIncreasing, type LucideIcon } from 'lucide-react'
-import { OrdersPage, InventoryPage, ForecastPage, ComparePage } from '@/pages/PlannerPage'
-import { StatusPage } from '@/pages/StatusPage'
-
-export interface Feature {path: string; label: string; icon: LucideIcon; element: ReactNode}
+import type { ReactNode } from "react";
+import {
+  LayoutDashboard,
+  Bell,
+  ClipboardList,
+  TrendingUp,
+  Warehouse,
+  Truck,
+  Activity,
+  type LucideIcon,
+} from "lucide-react";
+import type { Role } from "@/lib/auth";
+import { InventoryPage, ForecastPage } from "@/pages/PlannerPage";
+import { OverviewPage, SupplyPage } from "@/pages/OperationsPage";
+import { StatusPage } from "@/pages/StatusPage";
+export interface Feature {
+  path: string;
+  label: string;
+  icon: LucideIcon;
+  element: ReactNode;
+  roles?: Role[];
+}
 export const FEATURES: Feature[] = [
-  {path:'/',label:'발주 추천',icon:ClipboardList,element:<OrdersPage/>},
-  {path:'/inventory',label:'재고 알림',icon:Bell,element:<InventoryPage/>},
-  {path:'/forecast',label:'수요 예측',icon:TrendingUp,element:<ForecastPage/>},
-  {path:'/compare',label:'대안 비교·재고 이동',icon:ChartColumnIncreasing,element:<ComparePage/>},
-  {path:'/status',label:'연결 상태',icon:Activity,element:<StatusPage/>},
-]
+  {
+    path: "/",
+    label: "운영 대시보드",
+    icon: LayoutDashboard,
+    element: <OverviewPage />,
+  },
+  {
+    path: "/inventory",
+    label: "재고·소비기한",
+    icon: Bell,
+    element: <InventoryPage />,
+  },
+  {
+    path: "/orders",
+    label: "정기발주",
+    icon: ClipboardList,
+    element: <SupplyPage view="orders" />,
+  },
+  {
+    path: "/hub",
+    label: "허브 공급",
+    icon: Warehouse,
+    element: <SupplyPage view="hub" />,
+    roles: ["hub", "member"],
+  },
+  {
+    path: "/emergency",
+    label: "긴급발주",
+    icon: Truck,
+    element: <SupplyPage view="emergency" />,
+  },
+  {
+    path: "/forecast",
+    label: "수요 예측",
+    icon: TrendingUp,
+    element: <ForecastPage />,
+  },
+  {
+    path: "/status",
+    label: "데이터 연결",
+    icon: Activity,
+    element: <StatusPage />,
+  },
+];
