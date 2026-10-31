@@ -8,6 +8,7 @@
 시점 규약: 아래 함수들은 as_of(판단일 아침) 기준으로 "그 시점에 알 수 있는 것"만 돌려준다.
 새 접근 함수가 필요하면 호진에게 요청.
 """
+import os
 from datetime import date
 from functools import lru_cache
 from pathlib import Path
@@ -17,7 +18,7 @@ import pandas as pd
 from app.core.errors import AppError
 
 ROOT = Path(__file__).resolve().parents[2]
-RAW = ROOT / "data" / "raw"
+RAW = Path(os.environ.get("CRY_DATA_DIR", str(ROOT / "data" / "raw")))
 PROCESSED = ROOT / "data" / "processed"
 
 DATE_COLS = {"date", "valid_from", "start_date", "end_date", "order_date",

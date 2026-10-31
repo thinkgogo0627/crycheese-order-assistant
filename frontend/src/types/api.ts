@@ -8,6 +8,13 @@ export interface Scenario {
   transfer_minutes: number
   transfer_cost: number
   can_split_pack: boolean
+  forecast_profile?: 'original' | 'balanced' | 'protective'
+  decision_time?: string
+  horizon_hours?: number
+  promotion_multiplier?: number
+  adjustment_strength?: number | null
+  minimum_avoided_menu_qty?: number
+  live_sales?: {store_id: string; menu_id: string; hour: number; sold_qty: number}[] | null
 }
 
 export interface HealthResponse { ok: boolean; tables: Record<string, number> }
