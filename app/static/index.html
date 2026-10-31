@@ -11,7 +11,7 @@
 <label for="horizon">시나리오 기간 <b id="horizonVal">7일</b></label><input id="horizon" type="range" min="1" max="14" value="7">
 <label for="demand">수요 배율 <b id="demandVal">1.0배</b></label><input id="demand" type="range" min="0.5" max="2" step="0.1" value="1">
 <label for="delay">입고 지연 (가정)</label><select id="delay"><option value="0">0일</option><option value="1">1일</option><option value="2">2일</option><option value="3">3일</option></select>
-<label for="cost">매장 간 운송 1회 비용 (가정, 원)</label><input id="cost" type="number" value="10000" min="0" max="1000000" step="1000"><div class="small">거리·운임 자료가 없어 임의값입니다. 09:00 출발 → 30분 뒤 도착, 개점 전 사용 가정.</div>
+<label for="cost">매장 간 운송 1회 비용 (가정, 원)</label><input id="cost" type="number" value="0" min="0" max="1000000" step="1000"><div class="small">기본 비교는 이동 비용 0원입니다. 09:00 출발 → 30분 뒤 도착, 개점 전 사용 가정.</div>
 <label class="toggle"><input id="split" type="checkbox">통합발주 포장 소분 허용 (M1·M2 가정 시나리오용)</label>
 <button class="run" onclick="load()">조건 반영하여 재계산</button>
 <div class="foot">추천만 제공하며 실제 발주·이동을 실행하지 않습니다. 금액은 모두 가상 가격입니다. 원본 CSV는 공개 저장소에 올리지 마세요.</div>
@@ -49,8 +49,8 @@ if(tab==='order'){
  b+=panel('3개 매장 오늘 발주 합계',table(['매장','발주 금액'],Object.entries(by).map(([k,v])=>[esc(k),won(v)]),[1]));
 }
 if(tab==='alerts'){
- b+=panel(`${esc(st)} · 오늘 아침 재고 알림`,p.alerts.length?p.alerts.map(a=>`<div class="alert"><span class="pill ${ALERT[a.type][1]}">${ALERT[a.type][0]}</span> <b>${esc(a.name)}</b>${num(a.qty)}${esc(a.unit)} · ${esc(a.detail||'')}</div>`).join(''):'<div class="blank">알림 없음</div>');
- b+=panel(`${esc(st)} · 식자재 재고와 예상 소요`,table(['식자재','보관','현재 재고','오늘 예상','7일 예상','가장 빠른 사용기한','z'],p.ingredients.filter(x=>x.predicted_7d>0||x.current_stock>0).map(x=>[esc(x.ingredient),esc(x.storage),num(x.current_stock,0)+esc(x.unit),num(x.predicted_today,0)+esc(x.unit),num(x.predicted_7d,0)+esc(x.unit),esc(x.expiry_nearest||'-'),num(x.z,2)]),[2,3,4,6]));
+ b+=panel(`${esc(st)} · 오늘 아침 재고 알림`,p.alerts.length?p.alerts.map(a=>`<div class="alert"><span class="pill ${ALERT[a.type][1]}">${ALERT[a.type][0]}</span> <b>${esc(a.name)}</b>${num(a.qty)}${esc(a.unit)} · ${esc(a.detail||'')}${a.type==='expiry'&&a.lots?`<details><summary>로트별 예상 사용·폐기</summary>${table(['로트','마지막 사용일','임박 수량','예상 사용','예상 폐기'],a.lots.map(l=>[esc(l.lot_id),esc(l.last_use_date),num(l.current_qty)+esc(a.unit),num(l.expected_used_qty)+esc(a.unit),num(l.expected_expiry_qty)+esc(a.unit)]),[2,3,4])}<p class="small">기확정 입고와 메뉴별 판매 제약을 반영한 전망입니다. 신규 발주·이동·품질폐기는 제외합니다. 임박 수량 전체가 폐기된다는 뜻은 아닙니다.</p></details>`:''}</div>`).join(''):'<div class="blank">알림 없음</div>');
+ b+=panel(`${esc(st)} · 식자재 재고와 예상 소요`,table(['식자재','보관','전일 마감','오늘 입고','입고 후 장부','오늘 예상','7일 예상','가장 빠른 사용기한','z'],p.ingredients.filter(x=>x.predicted_7d>0||x.current_stock>0).map(x=>[esc(x.ingredient),esc(x.storage),num(x.opening_stock??x.current_stock,0)+esc(x.unit),num(x.received_today??0,0)+esc(x.unit),num(x.current_stock,0)+esc(x.unit),num(x.predicted_today,0)+esc(x.unit),num(x.predicted_7d,0)+esc(x.unit),esc(x.expiry_nearest||'-'),num(x.z,2)]),[2,3,4,5,6,8]),'<p class="small">07시 입고 후 장부 기준이며, 당일 실사조정과 이동 실행 전 수량입니다.</p>');
 }
 if(tab==='transfer'){
  b+=panel('오늘 09:00 출발 이동 추천',p.transfers.length?p.transfers.map(t=>`<div class="card" style="margin-bottom:10px;background:#f9fcf9"><b>${esc(t.from_store)} → ${esc(t.to_store)}</b> <span class="pill">${esc(t.depart)} 출발 · ${esc(t.arrive)} 도착</span> <span class="pill">회피 손실 ${won(t.avoided_loss)} vs 운송비 ${won(t.trip_cost)}</span>${table(['품목','수량','목적','회피 손실','사용기한'],t.items.map(i=>[esc(i.ingredient),num(i.qty)+esc(i.unit),esc(i.purpose),won(i.avoided_loss),esc(i.expiry)]),[1,3])}</div>`).join(''):'<p class="blank">오늘은 운송비보다 이득이 큰 이동이 없습니다.</p>');

@@ -12,7 +12,7 @@ export const DEFAULT_SCENARIO: Scenario = {
   delay_days: 0,
   service_level: 0.90,
   transfer_minutes: 30,
-  transfer_cost: 100,
+  transfer_cost: 0,
   can_split_pack: true,
 }
 

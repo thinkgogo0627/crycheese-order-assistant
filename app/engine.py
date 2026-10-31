@@ -26,6 +26,7 @@ from fastapi import HTTPException
 from pydantic import BaseModel, Field
 
 from app.forecast import Forecaster, EXTRA_HOLIDAYS
+from app.lot_projection import project_lot_usage
 
 DAYS = list('월화수목금토일')
 QUALITY_RATE = {'냉장': 0.003}          # 냉장 품목 품질 폐기: 잔량의 일 0.3% (1~9월 실적 기대값)
@@ -50,7 +51,7 @@ class Scenario(BaseModel):
     safety_alpha: float = Field(1.6, ge=.5, le=2.5)
     service_level: float | None = Field(None, ge=.5, le=.999)   # 이전 버전 호환용. 사용하지 않음
     transfer_minutes: int = Field(30, ge=0, le=180)
-    transfer_cost: float = Field(10000, ge=0, le=1000000)
+    transfer_cost: float = Field(0, ge=0, le=1000000)  # task baseline excludes transport expense
     can_split_pack: bool = False
 
 
@@ -153,7 +154,8 @@ class Engine:
         for r in filtered.itertuples(index=False):
             qty = float(r.remaining_qty)
             if qty > 0:
-                lots[(r.store_id, r.ingredient_id)].append({'qty': qty, 'expiry': date.fromisoformat(r.last_use_date), 'lot': str(r.lot_id)})
+                lots[(r.store_id, r.ingredient_id)].append({'qty': qty, 'expiry': date.fromisoformat(r.last_use_date),
+                    'receipt_date': date.fromisoformat(r.receipt_date), 'lot': str(r.lot_id)})
         issues = []
         inv = self.data['10_inventory_daily']
         last = inv[inv['date'] == prev.isoformat()]
@@ -249,7 +251,8 @@ class Engine:
         stock = self.count(lots, (s, i), day)
         if sum(f) <= 0:
             return dict(store=s, item=i, q=0, urgent=False, ppd=0, risk=9, doc=99, need=0, stock=stock,
-                        ss=0, short=0, exp=0, z=0, pack=pack, padded=0, want=0.0, gap=0.0)
+                        ss=0, short=0, exp=0, z=0, pack=pack, padded=0, want=0.0, gap=0.0,
+                        left=stock, base_q=0, safety_topup=0., rounding_qty=0.)
         short, left, exp = self.project(lots, arrivals, s, i, day, H, f)
         off = (day - sc.as_of).days
         rmse = self.F.horizon_rmse(self.si[s], self.ii[i], sc.as_of, off, off + H) * sc.demand_multiplier
@@ -274,7 +277,8 @@ class Engine:
         mean_f = max(sum(f) / len(f), 1e-9)
         return dict(store=s, item=i, q=q, urgent=(short + max(0.0, 0.5 * ss - left)) > 1e-9, ppd=mean_f / pack,
                     risk=(pack / mean_f) / shelf, doc=(stock + incoming + q * pack) / mean_f,
-                    need=sum(f), stock=stock, ss=ss, short=short, exp=exp, z=z, pack=pack, padded=0, want=want, gap=gap)
+                    need=sum(f), stock=stock, ss=ss, short=short, exp=exp, z=z, pack=pack, padded=0, want=want, gap=gap,
+                    left=left, base_q=q, safety_topup=max(0.,ss-left), rounding_qty=max(0.,q*pack-gap))
 
     def reason(self, ln: dict, day: date, a2: date) -> str:
         u = self.items[ln['item']]['use_unit']
@@ -368,6 +372,11 @@ class Engine:
                             'usable_stock': round(sum(x['stock'] - x['exp'] for x in xs), 1),
                             'safety_stock': round(sum(x['ss'] for x in xs), 1), 'z': round(xs[0]['z'], 2),
                             'padded': sum(x['padded'] for x in xs),
+                            'need_components': [{'store_id': x['store'], 'forecast_shortage_qty': x['short'],
+                                'safety_topup_qty': x['safety_topup'], 'pre_round_need_qty': x['gap'],
+                                'base_order_qty': x['base_q'], 'pack_rounding_qty': x['rounding_qty'],
+                                'minimum_topup_packs': x['padded'], 'minimum_topup_use_qty': x['padded']*x['pack'],
+                                'projected_left_qty': x['left']} for x in xs],
                             'reason': ' / '.join(self.reason(x, day, a2) for x in xs if x['q'] > 0) or
                                       ' / '.join(self.reason(x, day, a2) for x in xs)})
                 if day == sc.as_of:
@@ -440,7 +449,8 @@ class Engine:
                         continue
                     used = min(remaining, lot['qty'])
                     if used > 1e-8:
-                        lot['qty'] -= used; removed.append({'qty': used, 'expiry': lot['expiry'], 'lot': lot['lot']}); remaining -= used
+                        lot['qty'] -= used; removed.append({'qty': used, 'expiry': lot['expiry'],
+                            'receipt_date': lot.get('receipt_date',day), 'lot': lot['lot']}); remaining -= used
                     if remaining <= 1e-8:
                         break
                 shadow[(give, i)] = [l for l in shadow[(give, i)] if l['qty'] > 1e-8]
@@ -505,9 +515,10 @@ class Engine:
             for shipment in arrivals.pop(d, []):
                 i = shipment['item']; s = shipment['store']
                 until = d + timedelta(days=int(self.items[i]['shelf_life_days']) - 1)
-                lots[(s, i)].append({'qty': shipment['qty'], 'expiry': until, 'lot': 'committed' if shipment['pending'] else 'recommended'})
+                lots[(s, i)].append({'qty': shipment['qty'], 'expiry': until, 'receipt_date': d,
+                                    'lot': 'committed' if shipment['pending'] else 'recommended'})
             if step == 0:
-                self.alerts(sc, d, lots, fitem, result)
+                self.alerts(sc, d, lots, fitem, result, arrivals=arrivals, fmenu=fmenu)
             if mode in ('independent_transfer', 'shared'):
                 self.transfers_day(sc, d, lots, fitem, result)
             self.recommend_orders(sc, order_mode, d, lots, arrivals, fitem, result)
@@ -553,7 +564,10 @@ class Engine:
             result[k] = round(result[k], 2)
         return result
 
-    def alerts(self, sc: Scenario, d: date, lots: dict, fitem: dict, result: dict):
+    def alerts(self, sc: Scenario, d: date, lots: dict, fitem: dict, result: dict, *, arrivals=None, fmenu=None):
+        if fmenu is None:
+            fmenu, _ = self.forecasts(sc)
+        traces = project_lot_usage(self, d, lots, arrivals or {}, fmenu, horizon=3)
         for s in self.stores:
             for i, ir in self.items.items():
                 u = ir['use_unit']
@@ -567,10 +581,16 @@ class Engine:
                 soon = sum(l['qty'] for l in valid if l['expiry'] <= d + timedelta(days=2))
                 if soon > 1e-5:
                     first = min(l['expiry'] for l in valid)
-                    use = sum(fitem.get((d + timedelta(days=n), s, i), 0.) for n in range((first - d).days + 1))
+                    near = [r for r in traces[(s,i)] if r['expiry_within_horizon']]
+                    use = sum(r['expected_used_qty'] for r in near)
+                    expected_waste = sum(r['expected_expiry_qty'] for r in near)
                     result['alerts'].append({'type': 'expiry', 'store': s, 'item': i, 'name': ir['ingredient_name'],
                                              'qty': round(soon, 1), 'unit': u, 'date': first.isoformat(),
-                                             'detail': f'{first.strftime("%m/%d")}까지 사용 가능 · 그때까지 예상소요 {fmt(use)}{u}'})
+                                             'expiring_qty': soon, 'expected_use_before_expiry_qty': use,
+                                             'expected_expiry_qty': expected_waste,
+                                             'expected_expiry_cost': expected_waste*self.unit_cost(i,d),
+                                             'lots': near, 'projection_basis': 'menu_coupled_committed_only_before_new_orders_or_transfers',
+                                             'detail': f'3일 내 기한 임박 {fmt(soon)}{u} · 해당 로트 예상 사용 {fmt(use)}{u} · 예상 폐기 {fmt(expected_waste)}{u} (신규 발주·이동 전)'})
                 horizon_need = sum(fitem.get((d + timedelta(days=n), s, i), 0.) for n in range(14))
                 if cur > 0 and horizon_need <= 1e-6:
                     result['alerts'].append({'type': 'deadstock', 'store': s, 'item': i, 'name': ir['ingredient_name'],
@@ -592,6 +612,13 @@ class Engine:
             raise HTTPException(422, '2026-07-01~2026-10-01 기준일만 지원합니다.')
         fmenu, fitem = self.forecasts(sc)
         lots, arrivals, issues = self.initial(sc)
+        # One explicit morning book snapshot for displayed quantities, matching simulation receipts.
+        display_lots = deepcopy(lots)
+        received_today = defaultdict(float)
+        for r in arrivals.get(sc.as_of, []):
+            key=(r['store'],r['item']);received_today[key]+=r['qty']
+            display_lots[key].append({'qty':r['qty'], 'expiry':sc.as_of+timedelta(days=int(self.items[r['item']]['shelf_life_days'])-1),
+                                     'receipt_date':sc.as_of, 'lot':'committed'})
         results = {mode: self.simulate(sc, mode, fmenu, fitem, lots, arrivals) for mode in MODE_NAMES}
         # 이동은 회피손실이 운송비보다 클 때만 실행되므로 M0+를 기본 추천으로 사용
         chosen = results['independent_transfer']
@@ -609,8 +636,11 @@ class Engine:
         ingredients = [{'ingredient_id': i, 'ingredient': r['ingredient_name'], 'unit': r['use_unit'], 'storage': r['storage'],
                         'predicted_today': round(fitem.get((firstday, selected, i), 0), 1),
                         'predicted_7d': round(sum(fitem.get((d, selected, i), 0) for d in days), 1),
-                        'current_stock': round(self.count(lots, (selected, i), firstday), 1),
-                        'expiry_nearest': min((x['expiry'].isoformat() for x in lots[(selected, i)] if x['expiry'] >= firstday), default=None),
+                        'opening_stock': round(self.count(lots, (selected,i),firstday),1),
+                        'received_today': round(received_today[(selected,i)],1),
+                        'current_stock': round(self.count(display_lots, (selected, i), firstday), 1),
+                        'inventory_basis': 'after_07_receipts_before_inspection_and_transfers',
+                        'expiry_nearest': min((x['expiry'].isoformat() for x in display_lots[(selected, i)] if x['expiry'] >= firstday), default=None),
                         'z': round(self.z(i, sc.safety_alpha, sc.as_of), 2)}
                        for i, r in self.items.items()]
         comparison = [{**{k: v for k, v in res.items() if k in ['mode', 'purchase_cost', 'transport_cost', 'waste_cost', 'quality_waste_cost',
@@ -637,7 +667,7 @@ class Engine:
                           'holiday_factor': round(float(meta['hol'][ssi]), 3), 'promo_lift': round(float(meta['promo']), 3)},
                 'backtest': self.backtest,
                 'assumptions': [
-                    '기준일 아침(07시 입고·실사 후) 판단. 전날까지의 판매만 예측에 사용',
+                    '기준일 07시 입고 후·실사 및 이동 전 장부재고 기준. 실사조정은 미반영. 전날까지 판매만 예측에 사용',
                     '수요 예측: 메뉴별 EWMA(α=0.1) × 매장 요일지수(최근 8주) × 공휴일 계수 × 행사 배율. 확정 수요(demand_qty−cancel_qty) 기준',
                     f'데이터 기간 밖 공휴일은 직접 추가한 가정: {", ".join(hol_list)}',
                     '행사 배율은 기준일 전에 끝난 행사(S02 7월 세트 할인)에서 측정. 10월에 예정된 행사 정보는 없음',
