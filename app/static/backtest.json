@@ -1,0 +1,207 @@
+{
+ "note": "검증된 재고 시뮬레이터(실제 시간대별 수요·품절·긴급발주·매장 간 이동·냉장 품질폐기 재현. 기존 정책으로 돌린 결과가 실제 이력과 일치: 품절 17 vs 15, 기한폐기 38.1만 vs 38.0만 원, 평균재고 658.9만 vs 659.0만 원)에서 각 발주 로직을 매일 실행. 1월은 이력 부족 구간이라 평가에서 제외. 총손실 = 폐기원가 + 품절로 잃은 공헌이익(가상 가격). 변형 수요는 실제 시간대별 수요를 포아송 재표본한 5개 경로.",
+ "actual": {
+  "2~9월": [
+   {
+    "policy": "기존 정책 (제공 데이터 생성 정책)",
+    "stockouts": 16,
+    "lost_margin": 858114,
+    "waste": 2132229,
+    "total_loss": 2990343,
+    "avg_inventory": 6717506,
+    "purchase": 753942100,
+    "emergency": 16
+   },
+   {
+    "policy": "팀 초기 로직 (CV 18% 안전재고)",
+    "stockouts": 318,
+    "lost_margin": 40181517,
+    "waste": 954820,
+    "total_loss": 41136337,
+    "avg_inventory": 3081846,
+    "purchase": 731491500,
+    "emergency": 318
+   },
+   {
+    "policy": "통합 엔진 α=1.2 (재고 절감형)",
+    "stockouts": 9,
+    "lost_margin": 1270153,
+    "waste": 1808150,
+    "total_loss": 3078303,
+    "avg_inventory": 6240800,
+    "purchase": 752885600,
+    "emergency": 9
+   },
+   {
+    "policy": "통합 엔진 α=1.4",
+    "stockouts": 5,
+    "lost_margin": 793893,
+    "waste": 2040875,
+    "total_loss": 2834768,
+    "avg_inventory": 6477818,
+    "purchase": 753283500,
+    "emergency": 5
+   },
+   {
+    "policy": "통합 엔진 α=1.6 (기본값)",
+    "stockouts": 3,
+    "lost_margin": 154005,
+    "waste": 2238058,
+    "total_loss": 2392063,
+    "avg_inventory": 6565535,
+    "purchase": 753665700,
+    "emergency": 3
+   }
+  ],
+  "7~9월": [
+   {
+    "policy": "기존 정책 (제공 데이터 생성 정책)",
+    "stockouts": 7,
+    "lost_margin": 467228,
+    "waste": 891297,
+    "total_loss": 1358525,
+    "avg_inventory": 6747914,
+    "purchase": 284191800,
+    "emergency": 7
+   },
+   {
+    "policy": "팀 초기 로직 (CV 18% 안전재고)",
+    "stockouts": 118,
+    "lost_margin": 16008782,
+    "waste": 365958,
+    "total_loss": 16374740,
+    "avg_inventory": 3097936,
+    "purchase": 275832000,
+    "emergency": 118
+   },
+   {
+    "policy": "통합 엔진 α=1.2 (재고 절감형)",
+    "stockouts": 4,
+    "lost_margin": 375887,
+    "waste": 722314,
+    "total_loss": 1098202,
+    "avg_inventory": 6184374,
+    "purchase": 284938600,
+    "emergency": 4
+   },
+   {
+    "policy": "통합 엔진 α=1.4",
+    "stockouts": 3,
+    "lost_margin": 759294,
+    "waste": 788564,
+    "total_loss": 1547858,
+    "avg_inventory": 6425996,
+    "purchase": 284423400,
+    "emergency": 3
+   },
+   {
+    "policy": "통합 엔진 α=1.6 (기본값)",
+    "stockouts": 2,
+    "lost_margin": 75371,
+    "waste": 852918,
+    "total_loss": 928289,
+    "avg_inventory": 6507759,
+    "purchase": 284793500,
+    "emergency": 2
+   }
+  ]
+ },
+ "robust": [
+  {
+   "policy": "기존 정책 (제공 데이터 생성 정책)",
+   "total_loss": 3350228,
+   "stockouts": 31.2,
+   "lost_margin": 1116773,
+   "waste": 2233454,
+   "avg_inventory": 6741552,
+   "better_paths": 0,
+   "change_pct": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  {
+   "policy": "팀 초기 로직 (CV 18% 안전재고)",
+   "total_loss": 51906106,
+   "stockouts": 366.0,
+   "lost_margin": 50943876,
+   "waste": 962229,
+   "avg_inventory": 3102206,
+   "better_paths": 0,
+   "change_pct": [
+    1403.9,
+    1279.4,
+    1431.3,
+    1552.7,
+    1617.6
+   ]
+  },
+  {
+   "policy": "통합 엔진 α=1.2 (재고 절감형)",
+   "total_loss": 3096679,
+   "stockouts": 7.8,
+   "lost_margin": 1004487,
+   "waste": 2092192,
+   "avg_inventory": 6558159,
+   "better_paths": 5,
+   "change_pct": [
+    -2.4,
+    -11.0,
+    -7.0,
+    -13.9,
+    -3.1
+   ]
+  },
+  {
+   "policy": "통합 엔진 α=1.4",
+   "total_loss": 3039636,
+   "stockouts": 5.4,
+   "lost_margin": 654939,
+   "waste": 2384696,
+   "avg_inventory": 6828343,
+   "better_paths": 4,
+   "change_pct": [
+    -7.0,
+    -28.9,
+    2.3,
+    -5.3,
+    -4.0
+   ]
+  },
+  {
+   "policy": "통합 엔진 α=1.6 (기본값)",
+   "total_loss": 2953622,
+   "stockouts": 3.6,
+   "lost_margin": 276656,
+   "waste": 2676965,
+   "avg_inventory": 6919947,
+   "better_paths": 5,
+   "change_pct": [
+    -6.3,
+    -22.6,
+    -17.0,
+    -9.3,
+    -2.0
+   ]
+  },
+  {
+   "policy": "통합 엔진 α=1.8",
+   "total_loss": 3100804,
+   "stockouts": 2.6,
+   "lost_margin": 177335,
+   "waste": 2923469,
+   "avg_inventory": 6995449,
+   "better_paths": 4,
+   "change_pct": [
+    -4.1,
+    -20.7,
+    -11.0,
+    -2.8,
+    3.9
+   ]
+  }
+ ]
+}

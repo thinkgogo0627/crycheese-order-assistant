@@ -7,3 +7,9 @@ __pycache__/
 .DS_Store
 ~$*
 .tmp_stage/
+# raw hackathon data must not be committed
+data/raw/*.csv
+data/private/
+*.zip
+frontend/node_modules/
+frontend/dist/

@@ -25,7 +25,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   })
   if (!res.ok) {
     const body = (await res.json().catch(() => null)) as ApiErrorBody | null
-    throw new ApiError(body?.error?.message ?? `요청 실패 (${res.status})`, res.status)
+    throw new ApiError(body?.error?.message ?? body?.detail ?? `요청 실패 (${res.status})`, res.status)
   }
   return res.json() as Promise<T>
 }

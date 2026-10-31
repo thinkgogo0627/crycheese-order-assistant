@@ -1,19 +1,40 @@
-// 백엔드와 주고받는 공통 타입. 기능이 정해지면 여기에 응답 타입을 추가한다.
-
 export interface Scenario {
-  as_of: string // 판단일 아침 (YYYY-MM-DD)
-  store_id: string // S01 | S02 | S03
-  horizon_days: number // 1~14
-  demand_multiplier: number // 수요 배율 k
-  delay_days: number // 입고 지연 (가상 시나리오)
-  service_level: number | null // null = 품목별 자동
+  as_of: string
+  store_id: string
+  horizon_days: number
+  demand_multiplier: number
+  delay_days: number
+  service_level: number | null
+  transfer_minutes: number
+  transfer_cost: number
+  can_split_pack: boolean
 }
 
-export interface HealthResponse {
-  ok: boolean
-  tables: Record<string, number>
-}
-
-export interface ApiErrorBody {
-  error: { code: string; message: string }
+export interface HealthResponse { ok: boolean; tables: Record<string, number> }
+export interface ApiErrorBody { error?: { code: string; message: string }; detail?: string }
+export interface ForecastItem { menu_id: string; menu: string; qty: number; price: number }
+export interface IngredientItem { ingredient_id: string; ingredient: string; unit: string; predicted_today: number; current_stock: number; expiry_nearest: string | null }
+export interface OrderLine { supplier_id: string; supplier: string; store_id: string; ingredient_id: string; ingredient: string; order_date: string; arrival_date: string; order_qty: number; order_unit: string; use_qty: number; amount: number; allocated: Record<string, number> }
+export interface TransferLine { ingredient_id: string; ingredient: string; qty: number; unit: string; estimated_food_value: number }
+export interface TransferRoute { from_store: string; to_store: string; depart: string; arrive: string; minutes: number; trip_cost: number; items: TransferLine[]; estimated_food_value: number }
+export interface Alert { type: string; store: string; item: string; name: string; qty: number; unit: string; date: string }
+export interface PlanComparison { mode: string; purchase_cost: number; transport_cost: number; waste_cost: number; expected_revenue: number; lost_qty: number; fill_rate: number; ordered_packs: number; trip_count: number; closing_value: number; contribution_after_waste_and_transport: number }
+export interface Blocked { date: string; supplier: string; store: string; amount: number; minimum: number; reason: string }
+export interface PlanResponse {
+  as_of: string
+  store_id: string
+  recommended_mode: string
+  service_target: number
+  forecast: ForecastItem[]
+  ingredients: IngredientItem[]
+  comparison: PlanComparison[]
+  orders: OrderLine[]
+  all_orders: OrderLine[]
+  transfers: TransferRoute[]
+  shared_alternative_transfers: TransferRoute[]
+  alerts: Alert[]
+  all_alerts: Alert[]
+  blocked: Blocked[]
+  data_issues: string[]
+  assumptions: string[]
 }

@@ -10,7 +10,10 @@ export const DEFAULT_SCENARIO: Scenario = {
   horizon_days: 7,
   demand_multiplier: 1,
   delay_days: 0,
-  service_level: null,
+  service_level: 0.90,
+  transfer_minutes: 30,
+  transfer_cost: 100,
+  can_split_pack: true,
 }
 
 export const DATE_RANGE = { min: '2026-07-01', max: '2026-10-01' }
