@@ -34,7 +34,7 @@ interface RollingResult {
 const N = (n: number) => n.toLocaleString('ko-KR', { maximumFractionDigits: 2 })
 const FIELD = 'w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm'
 
-export function IntradayPage() {
+export function IntradayPage({ forecastOnly = false }: { forecastOnly?: boolean } = {}) {
   const { scenario, update } = useScenario()
   const [time, setTime] = useState('11:00')
   const [horizon, setHorizon] = useState(4)
@@ -48,7 +48,7 @@ export function IntradayPage() {
     demand_multiplier: scenario.demand_multiplier,
     promotion_multiplier: 1, delay_days: scenario.delay_days, transfer_cost: scenario.transfer_cost }
   const query = useQuery({
-    enabled: replayAvailable,
+    enabled: replayAvailable && !forecastOnly,
     queryKey: ['intraday-replan', input],
     queryFn: () => apiPost<IntradayResult>('/api/intraday_plan', input),
   })
@@ -57,19 +57,20 @@ export function IntradayPage() {
     queryKey: ['intraday-rolling', input],
     queryFn: () => apiPost<RollingResult>('/api/hourly_forecast', input),
   })
-  const p = query.data
+  const p = forecastOnly ? undefined : query.data
   const selected = p?.observed.find(x=>x.store_id===scenario.store_id)
   return <>
-    <PageHeader title="실판매 기반 시간별 재계획" description="완료된 시간의 실판매량으로 다음 시간대 수요를 보정하고, 30분 이동 후 품절손실 감소를 검증합니다." />
-    <div className="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900">
+    <PageHeader title={forecastOnly ? "실판매 기반 시간별 수요" : "실판매 기반 시간별 재계획"} description={forecastOnly ? "선택 매장의 완료된 시간 판매량으로 다음 시간대 수요를 보정합니다." : "완료된 시간의 실판매량으로 다음 시간대 수요를 보정하고, 30분 이동 후 품절손실 감소를 검증합니다."} />
+    {!forecastOnly && <div className="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900">
       <b>시뮬레이션 가정:</b> 이동 30분, 운송비는 왼쪽 입력값을 사용합니다. 소분 가능·동시 운송 가능을 가정한 검토용 초안입니다. 단, 실제 POS 연동·직원 이동 가능 여부·실측 현재고는 미검증입니다.
       <p className="mt-2 text-xs">S01·S03는 10시에, S02는 11시에 개점하므로 <b>10시 정각에는 전 시간대 실판매 관측값이 없습니다.</b> 11시에는 S01·S03의 10~11시 실적을 사용합니다.</p>
-    </div>
+    </div>}
+    {forecastOnly && <div className="notice"><p>우리 매장의 완료된 POS 시간만 반영하는 과거 데이터 재생입니다. 실시간 POS에 연결된 화면은 아니며, 발주·허브 공급은 각 업무 화면에서 확인합니다.</p></div>}
     {!replayAvailable && <Card title="이 날짜의 당일 POS 기록이 없습니다">
       <p className="text-sm">기준일을 자동 변경하지 않습니다. 과거 재생 날짜를 직접 선택하거나 API에 전체 완료시간 POS 스냅샷을 제공하세요.</p>
-      <button className="mt-2 rounded border px-3 py-2" onClick={()=>update({as_of:'2026-09-30'})}>9월 30일로 변경하여 재생</button>
+      {forecastOnly ? <p className="hint">상단 분석 조건에서 2026년 9월 30일 이전을 선택하고 조건을 적용하세요.</p> : <button className="mt-2 rounded border px-3 py-2" onClick={()=>update({as_of:'2026-09-30'})}>9월 30일로 변경하여 재생</button>}
     </Card>}
-    <p className="my-3 text-xs text-slate-600">이 화면은 시간별 잠재 수요와 이동 초안의 실험 기능입니다. 기존 일별 발주 모델은 유지됩니다. 일별 예측기간·서비스 수준·공동발주 소분 설정은 이 화면에 적용되지 않습니다. 이동의 경제성 최적화는 수행하지 않습니다.</p>
+    {!forecastOnly && <p className="my-3 text-xs text-slate-600">이 화면은 시간별 잠재 수요와 이동 초안의 실험 기능입니다. 기존 일별 발주 모델은 유지됩니다. 일별 예측기간·서비스 수준·공동발주 소분 설정은 이 화면에 적용되지 않습니다. 이동의 경제성 최적화는 수행하지 않습니다.</p>}
     <Card title="시간별 재계획 조건">
       <div className="grid gap-3 sm:grid-cols-3">
         <label className="text-xs text-slate-600">관찰 시각
@@ -96,7 +97,7 @@ export function IntradayPage() {
           </select>
         </label>
       </div>
-      <p className="mt-3 text-xs text-slate-500">품절 보호 정책은 실제 식자재 비용으로 추정된 손실비율이 아니라 과소예측에 1.5배를 주는 민감도 실험입니다. 분석일: {day} · {scenario.store_id}. 이전 기간 재생 기능이며, 현재 POS를 직접 읽는 기능이 아닙니다. 기준일과 매장은 왼쪽 메뉴에서 선택하세요.</p>
+      <p className="mt-3 text-xs text-slate-500">품절 보호 정책은 실제 식자재 비용으로 추정된 손실비율이 아니라 과소예측에 1.5배를 주는 민감도 실험입니다. 분석일: {day} · {scenario.store_id}. 이전 기간 재생 기능이며, 현재 POS를 직접 읽는 기능이 아닙니다. 기준일은 상단 분석 조건에서 변경하고, 매장은 로그인 계정 기준으로 고정됩니다.</p>
     </Card>
     <div className="mt-4"><Card title="당일 판매량 누적 → 다음 1시간 예측 (매시간 업데이트)">
       <p className="mb-3 text-xs text-slate-500">10:00은 10:00~10:59 판매 구간입니다. 각 예측에는 직전까지 <b>완료된 시간의 POS 판매량만</b> 누적됩니다.</p>
@@ -114,8 +115,8 @@ export function IntradayPage() {
       </table></div>}
       {rolling.data?.timeline.length ? <p className="mt-3 text-xs text-slate-500">마지막 예측 주요 메뉴: {rolling.data.timeline[rolling.data.timeline.length-1].top_menus.slice(0,3).map(m=>`${m.menu} ${N(m.predicted)}개`).join(' · ')}</p> : null}
     </Card></div>
-    {replayAvailable && query.isPending && <div className="mt-4"><Card>시간별 판매 기록을 재생하고 있습니다…</Card></div>}
-    {query.isError && <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">계산 오류: {query.error.message}</div>}
+    {!forecastOnly && replayAvailable && query.isPending && <div className="mt-4"><Card>시간별 판매 기록을 재생하고 있습니다…</Card></div>}
+    {!forecastOnly && query.isError && <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">계산 오류: {query.error.message}</div>}
     {p && <>
       <div className="my-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {[

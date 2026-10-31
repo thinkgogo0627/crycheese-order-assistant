@@ -1,46 +1,82 @@
-// 사이드바 시나리오 입력을 모든 화면이 공유한다.
-// 화면에서 useScenario()로 읽고, React Query의 queryKey에 scenario를 넣으면
-// 입력이 바뀔 때 자동으로 다시 요청된다.
-import { createContext, useContext, useState, type ReactNode } from 'react'
-import type { Scenario } from '@/types/api'
-
+import { createContext, useContext, useState, type ReactNode } from "react";
+import type { Scenario } from "@/types/api";
+import { useAuth } from "./auth";
+// eslint-disable-next-line react-refresh/only-export-components
 export const DEFAULT_SCENARIO: Scenario = {
-  as_of: '2026-10-01',
-  store_id: 'S01',
+  as_of: "2026-10-01",
+  store_id: "S01",
   horizon_days: 7,
   demand_multiplier: 1,
   delay_days: 0,
-  service_level: 0.90,
+  service_level: 0.9,
   transfer_minutes: 30,
   transfer_cost: 0,
-  can_split_pack: true,
-}
-
-export const DATE_RANGE = { min: '2026-07-01', max: '2026-10-01' }
+  can_split_pack: false,
+  hub_store_ids: ["S01", "S02"],
+  hub_host_store_id: "S01",
+  hub_policy: "assigned",
+  max_hubs: 1,
+  chilled_capacity_liters: 200,
+  frozen_capacity_liters: 200,
+  ambient_capacity_liters: 150,
+  hub_daily_cost: 12000,
+};
+// eslint-disable-next-line react-refresh/only-export-components
+export const DATE_RANGE = { min: "2026-07-01", max: "2026-10-01" };
+// eslint-disable-next-line react-refresh/only-export-components
 export const STORES = [
-  { id: 'S01', name: '가상매장 A' },
-  { id: 'S02', name: '가상매장 B' },
-  { id: 'S03', name: '가상매장 C' },
-]
-
+  { id: "S01", name: "허브 매장" },
+  { id: "S02", name: "허브 소속 매장" },
+  { id: "S03", name: "독립 운영 매장" },
+];
 interface Ctx {
-  scenario: Scenario
-  update: (patch: Partial<Scenario>) => void
-  reset: () => void
+  scenario: Scenario;
+  draft: Scenario;
+  dirty: boolean;
+  update: (p: Partial<Scenario>) => void;
+  apply: () => void;
+  reset: () => void;
 }
-
-const ScenarioContext = createContext<Ctx | null>(null)
-
+const Context = createContext<Ctx | null>(null);
 export function ScenarioProvider({ children }: { children: ReactNode }) {
-  const [scenario, setScenario] = useState<Scenario>(DEFAULT_SCENARIO)
-  const update = (patch: Partial<Scenario>) => setScenario((s) => ({ ...s, ...patch }))
-  const reset = () => setScenario(DEFAULT_SCENARIO)
-  return <ScenarioContext.Provider value={{ scenario, update, reset }}>{children}</ScenarioContext.Provider>
+  const { account } = useAuth();
+  const initial: Scenario = {
+    ...DEFAULT_SCENARIO,
+    store_id: account?.store ?? "S01",
+    ...(account?.role === "independent"
+      ? {
+          hub_store_ids: ["S03"],
+          hub_host_store_id: null,
+          max_hubs: 0,
+          hub_policy: "none" as const,
+        }
+      : {}),
+  };
+  const [scenario, setScenario] = useState(initial);
+  const [draft, setDraft] = useState(initial);
+  const update = (p: Partial<Scenario>) => setDraft((s) => ({ ...s, ...p }));
+  const reset = () => {
+    setDraft(initial);
+    setScenario(initial);
+  };
+  return (
+    <Context.Provider
+      value={{
+        scenario,
+        draft,
+        dirty: JSON.stringify(draft) !== JSON.stringify(scenario),
+        update,
+        apply: () => setScenario(draft),
+        reset,
+      }}
+    >
+      {children}
+    </Context.Provider>
+  );
 }
-
 // eslint-disable-next-line react-refresh/only-export-components
 export function useScenario() {
-  const ctx = useContext(ScenarioContext)
-  if (!ctx) throw new Error('useScenario는 ScenarioProvider 안에서 써야 합니다')
-  return ctx
+  const value = useContext(Context);
+  if (!value) throw new Error("ScenarioProvider required");
+  return value;
 }

@@ -1,39 +1,109 @@
-import { NavLink, Outlet } from 'react-router-dom'
-import { FEATURES } from '@/features'
-import { ApiStatus } from './ApiStatus'
-import { ScenarioPanel } from './ScenarioPanel'
-import { useScenario } from '@/lib/scenario'
-
+import { useEffect } from "react";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { LogOut, ArrowUpRight, SlidersHorizontal } from "lucide-react";
+import { FEATURES } from "@/features";
+import { useAuth } from "@/lib/auth";
+import { useScenario } from "@/lib/scenario";
+import { ApiStatus } from "./ApiStatus";
+import { ScenarioPanel } from "./ScenarioPanel";
 export function Layout() {
-  const { scenario } = useScenario()
+  const { account, logout } = useAuth();
+  const { scenario } = useScenario();
+  const location = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+  const features = FEATURES.filter(
+    (f) => !f.roles || (account && f.roles.includes(account.role)),
+  );
   return (
-    <div className="flex min-h-screen flex-col md:flex-row">
-      <aside className="w-full shrink-0 border-b border-slate-200 bg-white p-4 md:w-64 md:border-b-0 md:border-r">
-        <div className="mb-6">
-          <p className="text-lg font-bold">식자재 발주 도우미</p>
-          <ApiStatus />
+    <div className="app-shell">
+      <aside className="sidebar">
+        <a
+          className="sidebar-logo"
+          href="https://www.crycheeseburger.com/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <img src="/brand/crycheese-logo.webp" alt="크라이치즈버거" />
+          <ArrowUpRight size={15} />
+        </a>
+        <div className="workspace-label">
+          STORE OPERATIONS <span>DEMO</span>
         </div>
-        <nav className="mb-6 flex gap-1 overflow-x-auto md:flex-col">
-          {FEATURES.map(({ path, label, icon: Icon }) => (
-            <NavLink key={path} to={path} end
+        <nav aria-label="주 메뉴">
+          {features.map(({ path, label, icon: Icon }) => (
+            <NavLink
+              key={path}
+              to={path}
+              end
               className={({ isActive }) =>
-                `flex items-center gap-2 whitespace-nowrap rounded-md px-3 py-2 text-sm ${
-                  isActive ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100'
-                }`}>
-              <Icon size={16} />
+                `nav-item ${isActive ? "active" : ""}`
+              }
+            >
+              <Icon size={18} />
               {label}
+              <span className="nav-dot" />
             </NavLink>
           ))}
         </nav>
-        <div className="hidden md:block"><ScenarioPanel /></div>
-        <details className="md:hidden">
-          <summary className="cursor-pointer text-sm font-medium text-slate-700">{scenario.store_id} · {scenario.as_of} · 조건 변경</summary>
-          <div className="mt-4"><ScenarioPanel /></div>
-        </details>
+        <div className="sidebar-bottom">
+          <p className="sidebar-note">
+            필요한 만큼 준비하고,
+            <br />
+            함께 낭비를 줄입니다.
+          </p>
+          <div className="account-footer">
+            <span className="avatar">{account?.store.slice(-2)}</span>
+            <div>
+              <b>{account?.title}</b>
+              <small>
+                {account?.id} · {account?.store}
+              </small>
+            </div>
+            <button onClick={logout} aria-label="로그아웃" title="로그아웃">
+              <LogOut size={18} />
+            </button>
+          </div>
+        </div>
       </aside>
-      <main className="min-w-0 flex-1 p-4 md:p-8">
-        <Outlet />
-      </main>
+      <div className="workspace">
+        <header className="topbar">
+          <div>
+            <span className="breadcrumb">매장 운영</span>
+            <span className="breadcrumb-separator">/</span>
+            <b>{features.find((f) => f.path === location.pathname)?.label}</b>
+          </div>
+          <div className="topbar-right">
+            <ApiStatus />
+            <span className="store-chip">
+              {scenario.store_id} ·{" "}
+              {account?.role === "independent" ? "독립 운영" : "H01 그룹"}
+            </span>
+          </div>
+        </header>
+        <div className="workspace-content">
+          <div className="context-strip">
+            <span>
+              <i /> 합성 데이터 시뮬레이션 · {scenario.as_of} 기준 ·{" "}
+              {scenario.horizon_days}일 전망
+            </span>
+            <details className="scenario-popover">
+              <summary>
+                <SlidersHorizontal size={15} /> 분석 조건
+              </summary>
+              <ScenarioPanel />
+            </details>
+          </div>
+          <main id="main-content">
+            <Outlet />
+          </main>
+          <footer className="workspace-footer">
+            <span>CRYCHEESEBURGER OPERATIONS</span>
+            <span>모든 발주·공급 결과는 실행 전 검토할 초안입니다.</span>
+          </footer>
+        </div>
+      </div>
     </div>
-  )
+  );
 }

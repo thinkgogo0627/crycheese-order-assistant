@@ -186,3 +186,26 @@ raise AppError("no_data", "해당 기준일의 재고 기록이 없습니다", s
 - [ ] `pd.read_csv`, `HTTPException`, 다른 기능 폴더 import가 없다
 - [ ] as_of 당일 이후 데이터를 쓰지 않는다
 - [ ] `python3 scripts/smoke_test.py` 전부 통과
+
+
+## 통합 UI 확장 계약 (2026-10-31)
+
+사용자의 전체 UI·서비스 통합 및 역할별 화면 요청으로 아래 공통 입력을 기본값과 함께 확장했습니다.
+개별 기능의 임의 입력 모델은 추가하지 않았습니다. 기존 6개 필드 요청도 그대로 동작합니다.
+
+| 필드 | 기본값 | 의미 |
+|---|---|---|
+| `hub_store_ids` | null | 중복 없는 실제 매장 ID 배열. null이면 기존 전체 3개 매장 |
+| `hub_host_store_id` | null | 허브 역할을 하는 매장. 그룹 안에 있어야 함 |
+| `hub_policy` | auto | auto=대안 탐색, assigned=H01 지정 그룹 고정, none=무허브 |
+| `max_hubs` | 2 | 허브 상한 0~3 |
+| `chilled_capacity_liters` | 200 | 허브 자체 영업 재고를 제외한 냉장 여유 L |
+| `frozen_capacity_liters` | 200 | 냉동 여유 L |
+| `ambient_capacity_liters` | 150 | 상온 여유 L |
+| `hub_daily_cost` | 12000 | 허브당 가정 운영비 원/일 |
+| `transfer_cost` | 0 | 배송 추가비 원/회 |
+| `can_split_pack` | false | 포장 소분 허용 여부. 현재 UI는 false 고정 |
+
+시연 ID는 프론트 화면 분류이며 인증·권한 검증 수단이 아닙니다. 서버 인증이 필요할 때는
+인증 세션에서 매장 범위를 결정해야 하며, 클라이언트가 보낸 범위를 보안 근거로 사용하면 안 됩니다.
+머지 담당자와 Git 작업 흐름은 기존 규칙을 유지합니다.
