@@ -1,0 +1,1233 @@
+{
+  "policy_comparison": {
+    "oracle_reference": {
+      "metrics": {
+        "품절(매장×식자재×일)": 3,
+        "판매손실(개)": 20,
+        "판매손실 매출": 233458,
+        "판매손실 공헌이익": 154005,
+        "기한폐기": 487704,
+        "품질폐기": 1750354,
+        "폐기합계": 2238058,
+        "총손실(폐기+공헌이익손실)": 2392063,
+        "평균재고금액(3매장)": 6565535,
+        "구매금액": 753665700,
+        "긴급발주": 3,
+        "매장간이동": 43
+      },
+      "metrics_aug_sep": {
+        "품절(매장×식자재×일)": 2,
+        "판매손실(개)": 10,
+        "판매손실 매출": 117285,
+        "판매손실 공헌이익": 75371,
+        "기한폐기": 96745,
+        "품질폐기": 417806,
+        "폐기합계": 514551,
+        "총손실(폐기+공헌이익손실)": 589922,
+        "평균재고금액(3매장)": 6270609,
+        "구매금액": 187083300,
+        "긴급발주": 2,
+        "매장간이동": 13
+      },
+      "by_store": [
+        {
+          "store": "S01",
+          "lost_menu_qty": 11.548473839136607,
+          "stockout_item_days": 2,
+          "expiry_cost": 22743.337890618204,
+          "quality_cost": 793529.3231178338,
+          "purchase": 427592500.0
+        },
+        {
+          "store": "S02",
+          "lost_menu_qty": 0.0,
+          "stockout_item_days": 0,
+          "expiry_cost": 274365.48121003597,
+          "quality_cost": 509650.51121109974,
+          "purchase": 177962600.0
+        },
+        {
+          "store": "S03",
+          "lost_menu_qty": 8.444140540540502,
+          "stockout_item_days": 1,
+          "expiry_cost": 190595.20270764772,
+          "quality_cost": 447174.58080097375,
+          "purchase": 148110600.0
+        }
+      ],
+      "evaluation_aug_sep": [
+        {
+          "store": "S01",
+          "lost_menu_qty": 1.4872247742056341,
+          "stockout_item_days": 1,
+          "expiry_cost": 4000.0,
+          "quality_cost": 171223.98011144352,
+          "purchase": 100383400.0
+        },
+        {
+          "store": "S02",
+          "lost_menu_qty": 0.0,
+          "stockout_item_days": 0,
+          "expiry_cost": 65922.72479024316,
+          "quality_cost": 133431.16632163714,
+          "purchase": 47998800.0
+        },
+        {
+          "store": "S03",
+          "lost_menu_qty": 8.444140540540502,
+          "stockout_item_days": 1,
+          "expiry_cost": 26822.657810938937,
+          "quality_cost": 113150.95839282303,
+          "purchase": 38701100.0
+        }
+      ],
+      "max_lot_balance_error": 7.275957614183426e-12,
+      "parity": {
+        "lost_qty": 0.0,
+        "stockout": 0.0,
+        "exp_waste": 2.2737367544323206e-13,
+        "q_waste": 3.552713678800501e-15,
+        "purchase": 0.0,
+        "close_qty": 9.094947017729282e-13
+      },
+      "cut_count": 0,
+      "preventive_move_count": 0,
+      "move_months": {}
+    },
+    "baseline": {
+      "metrics": {
+        "품절(매장×식자재×일)": 3,
+        "판매손실(개)": 20,
+        "판매손실 매출": 232085,
+        "판매손실 공헌이익": 153576,
+        "기한폐기": 494307,
+        "품질폐기": 1751123,
+        "폐기합계": 2245430,
+        "총손실(폐기+공헌이익손실)": 2399005,
+        "평균재고금액(3매장)": 6567207,
+        "구매금액": 753609800,
+        "긴급발주": 3,
+        "매장간이동": 55
+      },
+      "metrics_aug_sep": {
+        "품절(매장×식자재×일)": 2,
+        "판매손실(개)": 9,
+        "판매손실 매출": 115166,
+        "판매손실 공헌이익": 74418,
+        "기한폐기": 104058,
+        "품질폐기": 418992,
+        "폐기합계": 523050,
+        "총손실(폐기+공헌이익손실)": 597468,
+        "평균재고금액(3매장)": 6280614,
+        "구매금액": 187013600,
+        "긴급발주": 2,
+        "매장간이동": 15
+      },
+      "by_store": [
+        {
+          "store": "S01",
+          "lost_menu_qty": 11.123661378832416,
+          "stockout_item_days": 2,
+          "expiry_cost": 22480.936761791803,
+          "quality_cost": 794393.9270314901,
+          "purchase": 427565700.0
+        },
+        {
+          "store": "S02",
+          "lost_menu_qty": 0.0,
+          "stockout_item_days": 0,
+          "expiry_cost": 281128.0320586107,
+          "quality_cost": 510442.54911362217,
+          "purchase": 177933500.0
+        },
+        {
+          "store": "S03",
+          "lost_menu_qty": 8.444140540540502,
+          "stockout_item_days": 1,
+          "expiry_cost": 190697.59674765478,
+          "quality_cost": 446286.6124296376,
+          "purchase": 148110600.0
+        }
+      ],
+      "evaluation_aug_sep": [
+        {
+          "store": "S01",
+          "lost_menu_qty": 0.9943814448949838,
+          "stockout_item_days": 1,
+          "expiry_cost": 3833.3333333333335,
+          "quality_cost": 171549.75874569343,
+          "purchase": 100349200.0
+        },
+        {
+          "store": "S02",
+          "lost_menu_qty": 0.0,
+          "stockout_item_days": 0,
+          "expiry_cost": 73386.43964752274,
+          "quality_cost": 134784.87752892246,
+          "purchase": 47968000.0
+        },
+        {
+          "store": "S03",
+          "lost_menu_qty": 8.444140540540502,
+          "stockout_item_days": 1,
+          "expiry_cost": 26838.08495369608,
+          "quality_cost": 112657.31832574622,
+          "purchase": 38696400.0
+        }
+      ],
+      "max_lot_balance_error": 7.275957614183426e-12,
+      "nonworsening_all_store_menu_days": true,
+      "worsened_store_menu_days": 0,
+      "additional_lost_menu_qty_on_worse_days": 0.0,
+      "cut_count": 0,
+      "preventive_move_count": 0,
+      "move_months": {}
+    },
+    "trim_one": {
+      "metrics": {
+        "품절(매장×식자재×일)": 23,
+        "판매손실(개)": 431,
+        "판매손실 매출": 5075761,
+        "판매손실 공헌이익": 3253351,
+        "기한폐기": 234849,
+        "품질폐기": 1724581,
+        "폐기합계": 1959430,
+        "총손실(폐기+공헌이익손실)": 5212782,
+        "평균재고금액(3매장)": 6535640,
+        "구매금액": 751516700,
+        "긴급발주": 23,
+        "매장간이동": 247
+      },
+      "metrics_aug_sep": {
+        "품절(매장×식자재×일)": 5,
+        "판매손실(개)": 63,
+        "판매손실 매출": 722582,
+        "판매손실 공헌이익": 464217,
+        "기한폐기": 62328,
+        "품질폐기": 409913,
+        "폐기합계": 472241,
+        "총손실(폐기+공헌이익손실)": 936458,
+        "평균재고금액(3매장)": 6235414,
+        "구매금액": 186817600,
+        "긴급발주": 5,
+        "매장간이동": 60
+      },
+      "by_store": [
+        {
+          "store": "S01",
+          "lost_menu_qty": 0.9943814448949838,
+          "stockout_item_days": 1,
+          "expiry_cost": 11814.270095125139,
+          "quality_cost": 794576.0225384375,
+          "purchase": 427632300.0
+        },
+        {
+          "store": "S02",
+          "lost_menu_qty": 421.77060127477284,
+          "stockout_item_days": 21,
+          "expiry_cost": 70165.43734983605,
+          "quality_cost": 484079.3690011922,
+          "purchase": 175724200.0
+        },
+        {
+          "store": "S03",
+          "lost_menu_qty": 8.444140540540502,
+          "stockout_item_days": 1,
+          "expiry_cost": 152869.6191326162,
+          "quality_cost": 445925.398080434,
+          "purchase": 148160200.0
+        }
+      ],
+      "evaluation_aug_sep": [
+        {
+          "store": "S01",
+          "lost_menu_qty": 0.9943814448949838,
+          "stockout_item_days": 1,
+          "expiry_cost": 1333.3333333333333,
+          "quality_cost": 171792.52855548204,
+          "purchase": 100320000.0
+        },
+        {
+          "store": "S02",
+          "lost_menu_qty": 53.21076739251532,
+          "stockout_item_days": 3,
+          "expiry_cost": 45156.64878760816,
+          "quality_cost": 125621.92995624733,
+          "purchase": 47792500.0
+        },
+        {
+          "store": "S03",
+          "lost_menu_qty": 8.444140540540502,
+          "stockout_item_days": 1,
+          "expiry_cost": 15838.08495369608,
+          "quality_cost": 112498.50462954123,
+          "purchase": 38705100.0
+        }
+      ],
+      "max_lot_balance_error": 7.275957614183426e-12,
+      "nonworsening_all_store_menu_days": false,
+      "worsened_store_menu_days": 71,
+      "additional_lost_menu_qty_on_worse_days": 421.7706012747729,
+      "cut_count": 552,
+      "preventive_move_count": 0,
+      "move_months": {}
+    },
+    "trim_expiry": {
+      "metrics": {
+        "품절(매장×식자재×일)": 3,
+        "판매손실(개)": 15,
+        "판매손실 매출": 187666,
+        "판매손실 공헌이익": 123530,
+        "기한폐기": 389243,
+        "품질폐기": 1749539,
+        "폐기합계": 2138782,
+        "총손실(폐기+공헌이익손실)": 2262312,
+        "평균재고금액(3매장)": 6564791,
+        "구매금액": 753546100,
+        "긴급발주": 3,
+        "매장간이동": 66
+      },
+      "metrics_aug_sep": {
+        "품절(매장×식자재×일)": 2,
+        "판매손실(개)": 9,
+        "판매손실 매출": 115166,
+        "판매손실 공헌이익": 74418,
+        "기한폐기": 98199,
+        "품질폐기": 418004,
+        "폐기합계": 516203,
+        "총손실(폐기+공헌이익손실)": 590621,
+        "평균재고금액(3매장)": 6273251,
+        "구매금액": 187017600,
+        "긴급발주": 2,
+        "매장간이동": 18
+      },
+      "by_store": [
+        {
+          "store": "S01",
+          "lost_menu_qty": 6.8711088437374155,
+          "stockout_item_days": 2,
+          "expiry_cost": 19314.27009512514,
+          "quality_cost": 795147.3389610538,
+          "purchase": 427569700.0
+        },
+        {
+          "store": "S02",
+          "lost_menu_qty": 0.0,
+          "stockout_item_days": 0,
+          "expiry_cost": 176581.04608255526,
+          "quality_cost": 508303.6405794466,
+          "purchase": 177861800.0
+        },
+        {
+          "store": "S03",
+          "lost_menu_qty": 8.444140540540502,
+          "stockout_item_days": 1,
+          "expiry_cost": 193347.85801006388,
+          "quality_cost": 446087.5943330146,
+          "purchase": 148114600.0
+        }
+      ],
+      "evaluation_aug_sep": [
+        {
+          "store": "S01",
+          "lost_menu_qty": 0.9943814448949838,
+          "stockout_item_days": 1,
+          "expiry_cost": 2833.333333333333,
+          "quality_cost": 170997.44399105464,
+          "purchase": 100353200.0
+        },
+        {
+          "store": "S02",
+          "lost_menu_qty": 0.0,
+          "stockout_item_days": 0,
+          "expiry_cost": 68527.90813814386,
+          "quality_cost": 134324.0790651263,
+          "purchase": 47968000.0
+        },
+        {
+          "store": "S03",
+          "lost_menu_qty": 8.444140540540502,
+          "stockout_item_days": 1,
+          "expiry_cost": 26838.08495369608,
+          "quality_cost": 112682.38568715414,
+          "purchase": 38696400.0
+        }
+      ],
+      "max_lot_balance_error": 7.275957614183426e-12,
+      "nonworsening_all_store_menu_days": true,
+      "worsened_store_menu_days": 0,
+      "additional_lost_menu_qty_on_worse_days": 0.0,
+      "cut_count": 50,
+      "preventive_move_count": 0,
+      "move_months": {}
+    },
+    "trim_point_guarded": {
+      "metrics": {
+        "품절(매장×식자재×일)": 3,
+        "판매손실(개)": 20,
+        "판매손실 매출": 232085,
+        "판매손실 공헌이익": 153576,
+        "기한폐기": 494307,
+        "품질폐기": 1751123,
+        "폐기합계": 2245430,
+        "총손실(폐기+공헌이익손실)": 2399005,
+        "평균재고금액(3매장)": 6567207,
+        "구매금액": 753609800,
+        "긴급발주": 3,
+        "매장간이동": 55
+      },
+      "metrics_aug_sep": {
+        "품절(매장×식자재×일)": 2,
+        "판매손실(개)": 9,
+        "판매손실 매출": 115166,
+        "판매손실 공헌이익": 74418,
+        "기한폐기": 104058,
+        "품질폐기": 418992,
+        "폐기합계": 523050,
+        "총손실(폐기+공헌이익손실)": 597468,
+        "평균재고금액(3매장)": 6280614,
+        "구매금액": 187013600,
+        "긴급발주": 2,
+        "매장간이동": 15
+      },
+      "by_store": [
+        {
+          "store": "S01",
+          "lost_menu_qty": 11.123661378832416,
+          "stockout_item_days": 2,
+          "expiry_cost": 22480.936761791803,
+          "quality_cost": 794393.9270314901,
+          "purchase": 427565700.0
+        },
+        {
+          "store": "S02",
+          "lost_menu_qty": 0.0,
+          "stockout_item_days": 0,
+          "expiry_cost": 281128.0320586107,
+          "quality_cost": 510442.54911362217,
+          "purchase": 177933500.0
+        },
+        {
+          "store": "S03",
+          "lost_menu_qty": 8.444140540540502,
+          "stockout_item_days": 1,
+          "expiry_cost": 190697.59674765478,
+          "quality_cost": 446286.6124296376,
+          "purchase": 148110600.0
+        }
+      ],
+      "evaluation_aug_sep": [
+        {
+          "store": "S01",
+          "lost_menu_qty": 0.9943814448949838,
+          "stockout_item_days": 1,
+          "expiry_cost": 3833.3333333333335,
+          "quality_cost": 171549.75874569343,
+          "purchase": 100349200.0
+        },
+        {
+          "store": "S02",
+          "lost_menu_qty": 0.0,
+          "stockout_item_days": 0,
+          "expiry_cost": 73386.43964752274,
+          "quality_cost": 134784.87752892246,
+          "purchase": 47968000.0
+        },
+        {
+          "store": "S03",
+          "lost_menu_qty": 8.444140540540502,
+          "stockout_item_days": 1,
+          "expiry_cost": 26838.08495369608,
+          "quality_cost": 112657.31832574622,
+          "purchase": 38696400.0
+        }
+      ],
+      "max_lot_balance_error": 7.275957614183426e-12,
+      "nonworsening_all_store_menu_days": true,
+      "worsened_store_menu_days": 0,
+      "additional_lost_menu_qty_on_worse_days": 0.0,
+      "cut_count": 0,
+      "preventive_move_count": 0,
+      "move_months": {}
+    },
+    "trim_guarded": {
+      "metrics": {
+        "품절(매장×식자재×일)": 3,
+        "판매손실(개)": 20,
+        "판매손실 매출": 232085,
+        "판매손실 공헌이익": 153576,
+        "기한폐기": 494307,
+        "품질폐기": 1751123,
+        "폐기합계": 2245430,
+        "총손실(폐기+공헌이익손실)": 2399005,
+        "평균재고금액(3매장)": 6567207,
+        "구매금액": 753609800,
+        "긴급발주": 3,
+        "매장간이동": 55
+      },
+      "metrics_aug_sep": {
+        "품절(매장×식자재×일)": 2,
+        "판매손실(개)": 9,
+        "판매손실 매출": 115166,
+        "판매손실 공헌이익": 74418,
+        "기한폐기": 104058,
+        "품질폐기": 418992,
+        "폐기합계": 523050,
+        "총손실(폐기+공헌이익손실)": 597468,
+        "평균재고금액(3매장)": 6280614,
+        "구매금액": 187013600,
+        "긴급발주": 2,
+        "매장간이동": 15
+      },
+      "by_store": [
+        {
+          "store": "S01",
+          "lost_menu_qty": 11.123661378832416,
+          "stockout_item_days": 2,
+          "expiry_cost": 22480.936761791803,
+          "quality_cost": 794393.9270314901,
+          "purchase": 427565700.0
+        },
+        {
+          "store": "S02",
+          "lost_menu_qty": 0.0,
+          "stockout_item_days": 0,
+          "expiry_cost": 281128.0320586107,
+          "quality_cost": 510442.54911362217,
+          "purchase": 177933500.0
+        },
+        {
+          "store": "S03",
+          "lost_menu_qty": 8.444140540540502,
+          "stockout_item_days": 1,
+          "expiry_cost": 190697.59674765478,
+          "quality_cost": 446286.6124296376,
+          "purchase": 148110600.0
+        }
+      ],
+      "evaluation_aug_sep": [
+        {
+          "store": "S01",
+          "lost_menu_qty": 0.9943814448949838,
+          "stockout_item_days": 1,
+          "expiry_cost": 3833.3333333333335,
+          "quality_cost": 171549.75874569343,
+          "purchase": 100349200.0
+        },
+        {
+          "store": "S02",
+          "lost_menu_qty": 0.0,
+          "stockout_item_days": 0,
+          "expiry_cost": 73386.43964752274,
+          "quality_cost": 134784.87752892246,
+          "purchase": 47968000.0
+        },
+        {
+          "store": "S03",
+          "lost_menu_qty": 8.444140540540502,
+          "stockout_item_days": 1,
+          "expiry_cost": 26838.08495369608,
+          "quality_cost": 112657.31832574622,
+          "purchase": 38696400.0
+        }
+      ],
+      "max_lot_balance_error": 7.275957614183426e-12,
+      "nonworsening_all_store_menu_days": true,
+      "worsened_store_menu_days": 0,
+      "additional_lost_menu_qty_on_worse_days": 0.0,
+      "cut_count": 0,
+      "preventive_move_count": 0,
+      "move_months": {}
+    },
+    "transfer_guarded": {
+      "metrics": {
+        "품절(매장×식자재×일)": 3,
+        "판매손실(개)": 23,
+        "판매손실 매출": 274409,
+        "판매손실 공헌이익": 183237,
+        "기한폐기": 421084,
+        "품질폐기": 1750830,
+        "폐기합계": 2171914,
+        "총손실(폐기+공헌이익손실)": 2355151,
+        "평균재고금액(3매장)": 6564303,
+        "구매금액": 753497100,
+        "긴급발주": 3,
+        "매장간이동": 96
+      },
+      "metrics_aug_sep": {
+        "품절(매장×식자재×일)": 2,
+        "판매손실(개)": 9,
+        "판매손실 매출": 115166,
+        "판매손실 공헌이익": 74418,
+        "기한폐기": 97385,
+        "품질폐기": 419048,
+        "폐기합계": 516433,
+        "총손실(폐기+공헌이익손실)": 590851,
+        "평균재고금액(3매장)": 6276629,
+        "구매금액": 187008400,
+        "긴급발주": 2,
+        "매장간이동": 26
+      },
+      "by_store": [
+        {
+          "store": "S01",
+          "lost_menu_qty": 14.978244932179752,
+          "stockout_item_days": 2,
+          "expiry_cost": 27845.493211625377,
+          "quality_cost": 794601.5190914378,
+          "purchase": 427438400.0
+        },
+        {
+          "store": "S02",
+          "lost_menu_qty": 0.0,
+          "stockout_item_days": 0,
+          "expiry_cost": 199514.9252368249,
+          "quality_cost": 509956.99646444793,
+          "purchase": 177944100.0
+        },
+        {
+          "store": "S03",
+          "lost_menu_qty": 8.444140540540502,
+          "stockout_item_days": 1,
+          "expiry_cost": 193723.2595497149,
+          "quality_cost": 446271.3329716485,
+          "purchase": 148114600.0
+        }
+      ],
+      "evaluation_aug_sep": [
+        {
+          "store": "S01",
+          "lost_menu_qty": 0.9943814448949838,
+          "stockout_item_days": 1,
+          "expiry_cost": 5014.414165418743,
+          "quality_cost": 171777.77836081572,
+          "purchase": 100333400.0
+        },
+        {
+          "store": "S02",
+          "lost_menu_qty": 0.0,
+          "stockout_item_days": 0,
+          "expiry_cost": 65566.63448017863,
+          "quality_cost": 134628.05755705497,
+          "purchase": 47978600.0
+        },
+        {
+          "store": "S03",
+          "lost_menu_qty": 8.444140540540502,
+          "stockout_item_days": 1,
+          "expiry_cost": 26803.614159692326,
+          "quality_cost": 112642.03886775713,
+          "purchase": 38696400.0
+        }
+      ],
+      "max_lot_balance_error": 1.4551915228366852e-11,
+      "nonworsening_all_store_menu_days": false,
+      "worsened_store_menu_days": 3,
+      "additional_lost_menu_qty_on_worse_days": 3.8545835533473363,
+      "cut_count": 0,
+      "preventive_move_count": 38,
+      "move_months": {
+        "2026-02": 7,
+        "2026-03": 7,
+        "2026-04": 3,
+        "2026-05": 5,
+        "2026-06": 1,
+        "2026-07": 4,
+        "2026-08": 10,
+        "2026-09": 1
+      }
+    },
+    "combined": {
+      "metrics": {
+        "품절(매장×식자재×일)": 3,
+        "판매손실(개)": 23,
+        "판매손실 매출": 274409,
+        "판매손실 공헌이익": 183237,
+        "기한폐기": 421084,
+        "품질폐기": 1750830,
+        "폐기합계": 2171914,
+        "총손실(폐기+공헌이익손실)": 2355151,
+        "평균재고금액(3매장)": 6564303,
+        "구매금액": 753497100,
+        "긴급발주": 3,
+        "매장간이동": 96
+      },
+      "metrics_aug_sep": {
+        "품절(매장×식자재×일)": 2,
+        "판매손실(개)": 9,
+        "판매손실 매출": 115166,
+        "판매손실 공헌이익": 74418,
+        "기한폐기": 97385,
+        "품질폐기": 419048,
+        "폐기합계": 516433,
+        "총손실(폐기+공헌이익손실)": 590851,
+        "평균재고금액(3매장)": 6276629,
+        "구매금액": 187008400,
+        "긴급발주": 2,
+        "매장간이동": 26
+      },
+      "by_store": [
+        {
+          "store": "S01",
+          "lost_menu_qty": 14.978244932179752,
+          "stockout_item_days": 2,
+          "expiry_cost": 27845.493211625377,
+          "quality_cost": 794601.5190914378,
+          "purchase": 427438400.0
+        },
+        {
+          "store": "S02",
+          "lost_menu_qty": 0.0,
+          "stockout_item_days": 0,
+          "expiry_cost": 199514.9252368249,
+          "quality_cost": 509956.99646444793,
+          "purchase": 177944100.0
+        },
+        {
+          "store": "S03",
+          "lost_menu_qty": 8.444140540540502,
+          "stockout_item_days": 1,
+          "expiry_cost": 193723.2595497149,
+          "quality_cost": 446271.3329716485,
+          "purchase": 148114600.0
+        }
+      ],
+      "evaluation_aug_sep": [
+        {
+          "store": "S01",
+          "lost_menu_qty": 0.9943814448949838,
+          "stockout_item_days": 1,
+          "expiry_cost": 5014.414165418743,
+          "quality_cost": 171777.77836081572,
+          "purchase": 100333400.0
+        },
+        {
+          "store": "S02",
+          "lost_menu_qty": 0.0,
+          "stockout_item_days": 0,
+          "expiry_cost": 65566.63448017863,
+          "quality_cost": 134628.05755705497,
+          "purchase": 47978600.0
+        },
+        {
+          "store": "S03",
+          "lost_menu_qty": 8.444140540540502,
+          "stockout_item_days": 1,
+          "expiry_cost": 26803.614159692326,
+          "quality_cost": 112642.03886775713,
+          "purchase": 38696400.0
+        }
+      ],
+      "max_lot_balance_error": 1.4551915228366852e-11,
+      "nonworsening_all_store_menu_days": false,
+      "worsened_store_menu_days": 3,
+      "additional_lost_menu_qty_on_worse_days": 3.8545835533473363,
+      "cut_count": 0,
+      "preventive_move_count": 38,
+      "move_months": {
+        "2026-02": 7,
+        "2026-03": 7,
+        "2026-04": 3,
+        "2026-05": 5,
+        "2026-06": 1,
+        "2026-07": 4,
+        "2026-08": 10,
+        "2026-09": 1
+      }
+    },
+    "transfer_I009": {
+      "metrics": {
+        "품절(매장×식자재×일)": 3,
+        "판매손실(개)": 20,
+        "판매손실 매출": 232085,
+        "판매손실 공헌이익": 153576,
+        "기한폐기": 430347,
+        "품질폐기": 1751785,
+        "폐기합계": 2182133,
+        "총손실(폐기+공헌이익손실)": 2335708,
+        "평균재고금액(3매장)": 6568116,
+        "구매금액": 753551300,
+        "긴급발주": 3,
+        "매장간이동": 58
+      },
+      "metrics_aug_sep": {
+        "품절(매장×식자재×일)": 2,
+        "판매손실(개)": 9,
+        "판매손실 매출": 115166,
+        "판매손실 공헌이익": 74418,
+        "기한폐기": 104058,
+        "품질폐기": 419418,
+        "폐기합계": 523476,
+        "총손실(폐기+공헌이익손실)": 597895,
+        "평균재고금액(3매장)": 6282938,
+        "구매금액": 187013600,
+        "긴급발주": 2,
+        "매장간이동": 15
+      },
+      "by_store": [
+        {
+          "store": "S01",
+          "lost_menu_qty": 11.123661378832416,
+          "stockout_item_days": 2,
+          "expiry_cost": 22480.936761791803,
+          "quality_cost": 795322.1096889869,
+          "purchase": 427507200.0
+        },
+        {
+          "store": "S02",
+          "lost_menu_qty": 0.0,
+          "stockout_item_days": 0,
+          "expiry_cost": 217168.87991838073,
+          "quality_cost": 510176.7707791282,
+          "purchase": 177933500.0
+        },
+        {
+          "store": "S03",
+          "lost_menu_qty": 8.444140540540502,
+          "stockout_item_days": 1,
+          "expiry_cost": 190697.59674765478,
+          "quality_cost": 446286.6124296376,
+          "purchase": 148110600.0
+        }
+      ],
+      "evaluation_aug_sep": [
+        {
+          "store": "S01",
+          "lost_menu_qty": 0.9943814448949838,
+          "stockout_item_days": 1,
+          "expiry_cost": 3833.3333333333335,
+          "quality_cost": 171976.26576730347,
+          "purchase": 100349200.0
+        },
+        {
+          "store": "S02",
+          "lost_menu_qty": 0.0,
+          "stockout_item_days": 0,
+          "expiry_cost": 73386.43964752274,
+          "quality_cost": 134784.87752892246,
+          "purchase": 47968000.0
+        },
+        {
+          "store": "S03",
+          "lost_menu_qty": 8.444140540540502,
+          "stockout_item_days": 1,
+          "expiry_cost": 26838.08495369608,
+          "quality_cost": 112657.31832574622,
+          "purchase": 38696400.0
+        }
+      ],
+      "max_lot_balance_error": 7.275957614183426e-12,
+      "nonworsening_all_store_menu_days": true,
+      "worsened_store_menu_days": 0,
+      "additional_lost_menu_qty_on_worse_days": 0.0,
+      "cut_count": 0,
+      "preventive_move_count": 3,
+      "move_months": {
+        "2026-03": 3
+      }
+    },
+    "transfer_I017": {
+      "metrics": {
+        "품절(매장×식자재×일)": 3,
+        "판매손실(개)": 23,
+        "판매손실 매출": 274409,
+        "판매손실 공헌이익": 183237,
+        "기한폐기": 482555,
+        "품질폐기": 1750167,
+        "폐기합계": 2232723,
+        "총손실(폐기+공헌이익손실)": 2415960,
+        "평균재고금액(3매장)": 6563711,
+        "구매금액": 753547600,
+        "긴급발주": 3,
+        "매장간이동": 69
+      },
+      "metrics_aug_sep": {
+        "품절(매장×식자재×일)": 2,
+        "판매손실(개)": 9,
+        "판매손실 매출": 115166,
+        "판매손실 공헌이익": 74418,
+        "기한폐기": 97385,
+        "품질폐기": 418621,
+        "폐기합계": 516006,
+        "총손실(폐기+공헌이익손실)": 590424,
+        "평균재고금액(3매장)": 6274461,
+        "구매금액": 187000400,
+        "긴급발주": 2,
+        "매장간이동": 24
+      },
+      "by_store": [
+        {
+          "store": "S01",
+          "lost_menu_qty": 14.978244932179752,
+          "stockout_item_days": 2,
+          "expiry_cost": 22480.936761791803,
+          "quality_cost": 793673.336433941,
+          "purchase": 427496900.0
+        },
+        {
+          "store": "S02",
+          "lost_menu_qty": 0.0,
+          "stockout_item_days": 0,
+          "expiry_cost": 269523.876396195,
+          "quality_cost": 510222.7747989419,
+          "purchase": 177940100.0
+        },
+        {
+          "store": "S03",
+          "lost_menu_qty": 8.444140540540502,
+          "stockout_item_days": 1,
+          "expiry_cost": 190550.5393804083,
+          "quality_cost": 446271.3329716485,
+          "purchase": 148110600.0
+        }
+      ],
+      "evaluation_aug_sep": [
+        {
+          "store": "S01",
+          "lost_menu_qty": 0.9943814448949838,
+          "stockout_item_days": 1,
+          "expiry_cost": 3833.3333333333335,
+          "quality_cost": 171351.27133920568,
+          "purchase": 100329400.0
+        },
+        {
+          "store": "S02",
+          "lost_menu_qty": 0.0,
+          "stockout_item_days": 0,
+          "expiry_cost": 66860.30188550675,
+          "quality_cost": 134628.05755705497,
+          "purchase": 47974600.0
+        },
+        {
+          "store": "S03",
+          "lost_menu_qty": 8.444140540540502,
+          "stockout_item_days": 1,
+          "expiry_cost": 26691.027586449607,
+          "quality_cost": 112642.03886775713,
+          "purchase": 38696400.0
+        }
+      ],
+      "max_lot_balance_error": 1.4551915228366852e-11,
+      "nonworsening_all_store_menu_days": false,
+      "worsened_store_menu_days": 3,
+      "additional_lost_menu_qty_on_worse_days": 3.8545835533473363,
+      "cut_count": 0,
+      "preventive_move_count": 14,
+      "move_months": {
+        "2026-02": 4,
+        "2026-03": 1,
+        "2026-08": 9
+      }
+    },
+    "transfer_I020": {
+      "metrics": {
+        "품절(매장×식자재×일)": 3,
+        "판매손실(개)": 20,
+        "판매손실 매출": 232085,
+        "판매손실 공헌이익": 153576,
+        "기한폐기": 496794,
+        "품질폐기": 1751123,
+        "폐기합계": 2247917,
+        "총손실(폐기+공헌이익손실)": 2401493,
+        "평균재고금액(3매장)": 6566889,
+        "구매금액": 753617800,
+        "긴급발주": 3,
+        "매장간이동": 79
+      },
+      "metrics_aug_sep": {
+        "품절(매장×식자재×일)": 2,
+        "판매손실(개)": 9,
+        "판매손실 매출": 115166,
+        "판매손실 공헌이익": 74418,
+        "기한폐기": 104058,
+        "품질폐기": 418992,
+        "폐기합계": 523050,
+        "총손실(폐기+공헌이익손실)": 597468,
+        "평균재고금액(3매장)": 6280458,
+        "구매금액": 187021600,
+        "긴급발주": 2,
+        "매장간이동": 17
+      },
+      "by_store": [
+        {
+          "store": "S01",
+          "lost_menu_qty": 11.123661378832416,
+          "stockout_item_days": 2,
+          "expiry_cost": 27845.493211625377,
+          "quality_cost": 794393.9270314901,
+          "purchase": 427565700.0
+        },
+        {
+          "store": "S02",
+          "lost_menu_qty": 0.0,
+          "stockout_item_days": 0,
+          "expiry_cost": 275078.2330394705,
+          "quality_cost": 510442.54911362217,
+          "purchase": 177937500.0
+        },
+        {
+          "store": "S03",
+          "lost_menu_qty": 8.444140540540502,
+          "stockout_item_days": 1,
+          "expiry_cost": 193870.31691696137,
+          "quality_cost": 446286.6124296376,
+          "purchase": 148114600.0
+        }
+      ],
+      "evaluation_aug_sep": [
+        {
+          "store": "S01",
+          "lost_menu_qty": 0.9943814448949838,
+          "stockout_item_days": 1,
+          "expiry_cost": 5014.414165418743,
+          "quality_cost": 171549.75874569343,
+          "purchase": 100353200.0
+        },
+        {
+          "store": "S02",
+          "lost_menu_qty": 0.0,
+          "stockout_item_days": 0,
+          "expiry_cost": 72092.77224219461,
+          "quality_cost": 134784.87752892246,
+          "purchase": 47972000.0
+        },
+        {
+          "store": "S03",
+          "lost_menu_qty": 8.444140540540502,
+          "stockout_item_days": 1,
+          "expiry_cost": 26950.6715269388,
+          "quality_cost": 112657.31832574622,
+          "purchase": 38696400.0
+        }
+      ],
+      "max_lot_balance_error": 7.275957614183426e-12,
+      "nonworsening_all_store_menu_days": true,
+      "worsened_store_menu_days": 0,
+      "additional_lost_menu_qty_on_worse_days": 0.0,
+      "cut_count": 0,
+      "preventive_move_count": 21,
+      "move_months": {
+        "2026-02": 3,
+        "2026-03": 3,
+        "2026-04": 3,
+        "2026-05": 5,
+        "2026-06": 1,
+        "2026-07": 4,
+        "2026-08": 1,
+        "2026-09": 1
+      }
+    }
+  },
+  "lot_diagnosis": {
+    "oracle_reference": {
+      "I009": {
+        "expiry_cost": 149206.05579248667,
+        "expired_batch_count": 4,
+        "expired_days": 4,
+        "expired_months": {
+          "2026-03": 3,
+          "2026-04": 1
+        },
+        "source_kinds": {
+          "regular": 4
+        },
+        "source_stores": {
+          "S02": 4
+        },
+        "regular_order_components": {
+          "shortage_component": 11881.807225073304,
+          "safety_component": 63390.30662868575,
+          "rounding_component": 20727.886146240948,
+          "minimum_component": 0.0
+        },
+        "regular_order_component_pct": {
+          "shortage_component": 12.376882526118024,
+          "safety_component": 66.031569404881,
+          "rounding_component": 21.591548069000986,
+          "minimum_component": 0.0
+        },
+        "topup_batches": 0,
+        "forecast_lifetime_need": 160367.25610476444,
+        "actual_lifetime_need": 140250.0,
+        "actual_lifetime_use": 140250.0
+      },
+      "I017": {
+        "expiry_cost": 49357.11586546259,
+        "expired_batch_count": 16,
+        "expired_days": 16,
+        "expired_months": {
+          "2026-02": 4,
+          "2026-03": 1,
+          "2026-04": 1,
+          "2026-06": 1,
+          "2026-08": 8,
+          "2026-09": 1
+        },
+        "source_kinds": {
+          "regular": 16
+        },
+        "source_stores": {
+          "S02": 16
+        },
+        "regular_order_components": {
+          "shortage_component": 0.0,
+          "safety_component": 11280.903253367786,
+          "rounding_component": 9719.096746632214,
+          "minimum_component": 0.0
+        },
+        "regular_order_component_pct": {
+          "shortage_component": 0.0,
+          "safety_component": 53.71858692079898,
+          "rounding_component": 46.28141307920102,
+          "minimum_component": 0.0
+        },
+        "topup_batches": 0,
+        "forecast_lifetime_need": 54059.20427542259,
+        "actual_lifetime_need": 40335.0,
+        "actual_lifetime_use": 40335.0
+      },
+      "I020": {
+        "expiry_cost": 46333.33333333333,
+        "expired_batch_count": 27,
+        "expired_days": 27,
+        "expired_months": {
+          "2026-02": 4,
+          "2026-03": 5,
+          "2026-04": 3,
+          "2026-05": 5,
+          "2026-06": 1,
+          "2026-07": 1,
+          "2026-08": 6,
+          "2026-09": 2
+        },
+        "source_kinds": {
+          "regular": 27
+        },
+        "source_stores": {
+          "S02": 27
+        },
+        "regular_order_components": {
+          "shortage_component": 27.38280878087061,
+          "safety_component": 396.8449201356356,
+          "rounding_component": 271.77227108349376,
+          "minimum_component": 0.0
+        },
+        "regular_order_component_pct": {
+          "shortage_component": 3.9343116064469266,
+          "safety_component": 57.017948295349946,
+          "rounding_component": 39.04774009820313,
+          "minimum_component": 0.0
+        },
+        "topup_batches": 0,
+        "forecast_lifetime_need": 1179.3047022423161,
+        "actual_lifetime_need": 788.0,
+        "actual_lifetime_use": 788.0
+      }
+    },
+    "baseline": {
+      "I009": {
+        "expiry_cost": 149206.05579248667,
+        "expired_batch_count": 4,
+        "expired_days": 4,
+        "expired_months": {
+          "2026-03": 3,
+          "2026-04": 1
+        },
+        "source_kinds": {
+          "regular": 4
+        },
+        "source_stores": {
+          "S02": 4
+        },
+        "regular_order_components": {
+          "shortage_component": 11881.807225073304,
+          "safety_component": 63390.30662868575,
+          "rounding_component": 20727.886146240948,
+          "minimum_component": 0.0
+        },
+        "regular_order_component_pct": {
+          "shortage_component": 12.376882526118024,
+          "safety_component": 66.031569404881,
+          "rounding_component": 21.591548069000986,
+          "minimum_component": 0.0
+        },
+        "topup_batches": 0,
+        "forecast_lifetime_need": 160367.25610476444,
+        "actual_lifetime_need": 140250.0,
+        "actual_lifetime_use": 140250.0
+      },
+      "I017": {
+        "expiry_cost": 49351.813007768724,
+        "expired_batch_count": 16,
+        "expired_days": 16,
+        "expired_months": {
+          "2026-02": 4,
+          "2026-03": 1,
+          "2026-04": 1,
+          "2026-06": 1,
+          "2026-08": 8,
+          "2026-09": 1
+        },
+        "source_kinds": {
+          "regular": 16
+        },
+        "source_stores": {
+          "S02": 16
+        },
+        "regular_order_components": {
+          "shortage_component": 0.0,
+          "safety_component": 11251.808549607409,
+          "rounding_component": 9748.191450392591,
+          "minimum_component": 0.0
+        },
+        "regular_order_component_pct": {
+          "shortage_component": 0.0,
+          "safety_component": 53.58004071241624,
+          "rounding_component": 46.419959287583765,
+          "minimum_component": 0.0
+        },
+        "topup_batches": 0,
+        "forecast_lifetime_need": 54059.20427542259,
+        "actual_lifetime_need": 40335.0,
+        "actual_lifetime_use": 40335.0
+      },
+      "I020": {
+        "expiry_cost": 46500.0,
+        "expired_batch_count": 27,
+        "expired_days": 27,
+        "expired_months": {
+          "2026-02": 4,
+          "2026-03": 5,
+          "2026-04": 3,
+          "2026-05": 5,
+          "2026-06": 1,
+          "2026-07": 1,
+          "2026-08": 6,
+          "2026-09": 2
+        },
+        "source_kinds": {
+          "regular": 27
+        },
+        "source_stores": {
+          "S02": 27
+        },
+        "regular_order_components": {
+          "shortage_component": 26.38280878087061,
+          "safety_component": 395.8449201356356,
+          "rounding_component": 273.77227108349376,
+          "minimum_component": 0.0
+        },
+        "regular_order_component_pct": {
+          "shortage_component": 3.7906334455273862,
+          "safety_component": 56.874270134430404,
+          "rounding_component": 39.335096420042206,
+          "minimum_component": 0.0
+        },
+        "topup_batches": 0,
+        "forecast_lifetime_need": 1179.3047022423161,
+        "actual_lifetime_need": 788.0,
+        "actual_lifetime_use": 788.0
+      }
+    }
+  }
+}
