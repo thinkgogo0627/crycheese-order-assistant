@@ -1,7 +1,10 @@
 @import "tailwindcss";
+@theme {
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+}
 @font-face {
   font-family: "Pretendard Variable";
-  font-weight: 45 920;
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
   src: url("/fonts/PretendardVariable.woff2") format("woff2");
@@ -15,13 +18,14 @@
     "Apple SD Gothic Neo",
     sans-serif;
   color: #191919;
-  background: #f7f7f2;
+  background: #f8f7f3;
+  font-size: 15px;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   --yellow: #f8b81c;
-  --muted: #77796f;
-  --line: #e6e7df;
+  --muted: #716c61;
+  --line: #e7e3d9;
 }
 * {
   box-sizing: border-box;
@@ -83,29 +87,29 @@ select {
   padding: 11px 13px;
   background: #fff;
   margin-top: 7px;
-  font-size: 14px;
+  font-size: 16px;
 }
 label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
 }
 small {
-  font-size: 11px;
+  font-size: 13px;
 }
 .muted,
 .hint {
   color: #74766f;
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.7;
 }
 .hint {
-  font-size: 12px;
+  font-size: 14px;
   margin-top: 14px;
 }
 .eyebrow {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 750;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.03em;
   color: #7b7c73;
 }
 .yellow {
@@ -116,9 +120,9 @@ small {
   align-items: center;
   justify-content: center;
   gap: 14px;
-  border-radius: 999px;
+  border-radius: 9px;
   padding: 13px 21px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   white-space: nowrap;
   transition:
@@ -142,7 +146,7 @@ small {
 }
 .small {
   padding: 8px 13px;
-  font-size: 12px;
+  font-size: 14px;
 }
 .text-button {
   display: inline-flex;
@@ -150,11 +154,11 @@ small {
   gap: 6px;
   background: none;
   color: #62665a;
-  font-size: 12px;
+  font-size: 14px;
 }
 .error-text {
   color: #a83225;
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.7;
 }
 .login-shell {
@@ -186,6 +190,7 @@ small {
   padding: 70px 0;
 }
 .login-copy h1 {
+  font-weight: 800;
   font-size: clamp(35px, 3.5vw, 58px);
   line-height: 1.23;
   letter-spacing: -0.04em;
@@ -202,14 +207,14 @@ small {
   flex-wrap: wrap;
   gap: 14px;
   margin-top: 42px;
-  font-size: 11px;
+  font-size: 13px;
   color: #cdcec5;
 }
 .story-line svg {
   color: var(--yellow);
 }
 .login-foot {
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.03em;
   color: #81857a;
 }
@@ -247,7 +252,7 @@ small {
   border-top: 1px solid var(--line);
   padding-top: 25px;
   margin-top: 30px;
-  font-size: 11px;
+  font-size: 13px;
   color: #777c70;
 }
 .account-list {
@@ -278,21 +283,21 @@ small {
   flex: 1;
 }
 .account-choice b {
-  font-size: 12px;
+  font-size: 14px;
   display: block;
 }
 .account-choice small {
   display: block;
-  font-size: 10px;
+  font-size: 12px;
   color: #777c70;
   margin-top: 4px;
 }
 .account-choice code {
-  font-size: 10px;
+  font-size: 12px;
   color: #7b7c72;
 }
 .demo-note {
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.7;
   color: #888d7f;
   margin-top: 16px;
@@ -304,7 +309,7 @@ small {
 .sidebar {
   width: 238px;
   flex-shrink: 0;
-  background: #171a15;
+  background: #22211d;
   color: #c8cdbf;
   position: sticky;
   top: 0;
@@ -327,7 +332,7 @@ small {
 }
 .workspace-label {
   margin: 28px 8px 22px;
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: 0.12em;
   color: #849079;
   display: flex;
@@ -338,7 +343,7 @@ small {
   border: 1px solid #48503f;
   border-radius: 4px;
   padding: 3px 4px;
-  font-size: 8px;
+  font-size: 11px;
 }
 .sidebar nav {
   display: flex;
@@ -351,7 +356,7 @@ small {
   gap: 12px;
   padding: 13px 15px;
   border-radius: 11px;
-  font-size: 13px;
+  font-size: 15px;
 }
 .nav-item svg {
   color: #9ba98d;
@@ -382,9 +387,9 @@ small {
   margin-top: auto;
 }
 .sidebar-note {
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.8;
-  color: #7d8970;
+  color: #9c9483;
   margin: 25px 10px;
 }
 .account-footer {
@@ -405,19 +410,19 @@ small {
   flex-shrink: 0;
   border-radius: 50%;
   color: #e6efd9;
-  font-size: 11px;
+  font-size: 13px;
 }
 .account-footer div {
   flex: 1;
 }
 .account-footer b {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   display: block;
 }
 .account-footer small {
   display: block;
-  font-size: 9px;
+  font-size: 12px;
   color: #8a957e;
   margin-top: 4px;
 }
@@ -439,7 +444,7 @@ small {
   justify-content: space-between;
   gap: 15px;
   padding: 0 36px;
-  font-size: 12px;
+  font-size: 14px;
 }
 .breadcrumb {
   color: #96998e;
@@ -460,7 +465,7 @@ small {
   border: 1px solid var(--line);
   border-radius: 30px;
   padding: 8px 13px;
-  font-size: 10px;
+  font-size: 12px;
 }
 .workspace-content {
   max-width: 1540px;
@@ -473,7 +478,7 @@ small {
   justify-content: space-between;
   margin: 22px 0 28px;
   gap: 12px;
-  font-size: 10px;
+  font-size: 12px;
   color: #828777;
 }
 .context-strip > span {
@@ -485,7 +490,7 @@ small {
   height: 5px;
   width: 5px;
   border-radius: 50%;
-  background: #859c68;
+  background: #c88a0b;
 }
 .scenario-popover {
   position: relative;
@@ -519,7 +524,7 @@ small {
   overflow: auto;
 }
 .scenario-panel label {
-  font-size: 11px;
+  font-size: 13px;
 }
 .form-pair {
   display: grid;
@@ -533,7 +538,7 @@ small {
   align-items: start;
 }
 .date-label {
-  font-size: 14px;
+  font-size: 16px;
   letter-spacing: -0.02em;
   text-align: right;
   margin: 5px 0;
@@ -541,7 +546,7 @@ small {
 .date-label span {
   display: block;
   margin-top: 5px;
-  font-size: 10px;
+  font-size: 12px;
   color: #8b9082;
 }
 .welcome-banner {
@@ -549,9 +554,9 @@ small {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  background: #20251c;
-  border-radius: 20px;
-  padding: 30px 32px;
+  background: #29271f;
+  border-radius: 12px;
+  padding: 24px 28px;
   color: #fff;
   overflow: hidden;
   margin-bottom: 22px;
@@ -564,14 +569,14 @@ small {
   margin: 12px 0;
 }
 .welcome-banner p {
-  font-size: 11px;
-  color: #aab49e;
+  font-size: 13px;
+  color: #c3bdad;
   margin: 13px 0 19px;
   line-height: 1.8;
 }
 .welcome-banner .button {
   padding: 11px 18px;
-  font-size: 11px;
+  font-size: 13px;
 }
 .banner-mark {
   display: flex;
@@ -587,7 +592,7 @@ small {
 }
 .banner-mark small {
   display: block;
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: 0.12em;
   margin-top: 3px;
 }
@@ -607,8 +612,8 @@ small {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 11px;
-  color: #777e6d;
+  font-size: 13px;
+  color: #746c60;
   gap: 12px;
 }
 .metric-card p {
@@ -619,15 +624,15 @@ small {
   margin: 18px 0 13px;
 }
 .metric-card p small {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 450;
   letter-spacing: 0;
   margin-left: 7px;
   color: #7f8575;
 }
 .metric-card > span {
-  font-size: 9px;
-  color: #969b8d;
+  font-size: 12px;
+  color: #7a7467;
 }
 .overview-grid {
   display: grid;
@@ -642,7 +647,7 @@ small {
   margin-bottom: 20px;
 }
 .section-heading h2 {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
 }
 .badge {
@@ -650,7 +655,7 @@ small {
   align-items: center;
   border-radius: 6px;
   padding: 5px 8px;
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
 }
@@ -659,8 +664,8 @@ small {
   color: #8f6216;
 }
 .neutral {
-  background: #eef3e7;
-  color: #586949;
+  background: #f3f0e7;
+  color: #706044;
 }
 .count {
   display: inline-block;
@@ -668,7 +673,7 @@ small {
   color: #777f6a;
   border-radius: 5px;
   padding: 3px 6px;
-  font-size: 10px;
+  font-size: 12px;
   margin-left: 6px;
 }
 .task-list > a {
@@ -690,19 +695,19 @@ small {
   flex-shrink: 0;
   display: grid;
   place-items: center;
-  font-size: 10px;
+  font-size: 12px;
   color: #78806a;
 }
 .task-list div {
   flex: 1;
 }
 .task-list b {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
 }
 .task-list p {
-  font-size: 10px;
-  color: #979d8d;
+  font-size: 12px;
+  color: #787265;
   line-height: 1.7;
   margin-top: 6px;
 }
@@ -716,7 +721,7 @@ small {
 .demand-row > div:first-child {
   display: flex;
   justify-content: space-between;
-  font-size: 11px;
+  font-size: 13px;
   margin-bottom: 8px;
 }
 .demand-row b {
@@ -744,9 +749,9 @@ small {
   gap: 15px;
   padding: 22px 0;
   margin-top: 35px;
-  font-size: 8px;
+  font-size: 11px;
   letter-spacing: 0.03em;
-  color: #9ca390;
+  color: #81796a;
 }
 .stack {
   display: grid;
@@ -756,11 +761,11 @@ small {
   display: flex;
   gap: 12px;
   align-items: flex-start;
-  background: #edf1e5;
-  border: 1px solid #dfe6d4;
+  background: #f7f4ea;
+  border: 1px solid #e8e1d0;
   border-radius: 12px;
   padding: 17px 20px;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.7;
 }
 .notice svg {
@@ -768,7 +773,7 @@ small {
   margin-top: 2px;
 }
 .notice p {
-  font-size: 11px;
+  font-size: 13px;
   margin-top: 3px;
 }
 .notice.warning {
@@ -786,9 +791,9 @@ small {
   display: flex;
   gap: 18px;
   align-items: center;
-  font-size: 12px;
+  font-size: 14px;
   padding: 5px 0;
-  color: #8c9480;
+  color: #7b7160;
   flex-wrap: wrap;
 }
 .flow-strip .current {
@@ -798,17 +803,77 @@ small {
 .table-scroll {
   overflow-x: auto;
 }
+.draft-table {
+  table-layout: fixed;
+  min-width: 960px;
+}
+.draft-table th, .draft-table td {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  vertical-align: top;
+}
+.draft-basis-toggle {
+  display: block;
+  margin-top: 9px;
+  padding: 0;
+  background: none;
+  color: #766342;
+  font-size: 13px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.draft-table .draft-basis-row td {
+  background: #faf8f1;
+  padding: 16px 20px !important;
+}
+.draft-basis-row p {
+  margin: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+  color: #6e6656;
+  line-height: 1.8;
+}
+.draft-edit-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 14px;
+  padding-bottom: 16px;
+}
+.draft-edit-summary b { margin-left: 8px; font-variant-numeric: tabular-nums; }
+.draft-edit-note { margin: 0 0 16px; }
+.draft-minimum-warning { background: #fff6df; color: #865b13; padding: 10px 14px; margin-bottom: 16px; border-radius: 6px; font-size: 14px; }
+.draft-minimum-warning p { margin: 3px 0; }
+.draft-minimum-warning b { margin-left: 8px; }
+.draft-quantity-field { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; white-space: nowrap; }
+.draft-quantity-field > span { flex: 0 0 auto; white-space: nowrap; }
+.draft-quantity-field input[type="number"] {
+  flex: 0 0 88px;
+  width: 88px;
+  max-width: 88px;
+  min-width: 88px;
+  margin: 0;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+.draft-quantity-field input[aria-invalid="true"] { border-color: #b64c32; }
+.draft-table .draft-input-error { color: #a13f29; }
 table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  font-size: 12px;
+  font-size: 14px;
   white-space: nowrap;
 }
 thead {
   background: #f7f8f2;
-  color: #89917b;
-  font-size: 10px;
+  color: #736b5e;
+  font-size: 12px;
   font-weight: 500;
 }
 th {
@@ -824,13 +889,13 @@ td b {
 }
 td small {
   display: block;
-  font-size: 9px;
-  color: #929a84;
+  font-size: 12px;
+  color: #756e60;
   margin-top: 5px;
 }
 td details {
-  font-size: 9px;
-  color: #929a84;
+  font-size: 12px;
+  color: #756e60;
   margin-top: 5px;
 }
 td details p {
@@ -850,11 +915,11 @@ td details p {
   padding: 25px 10px;
 }
 .empty-state b {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 550;
 }
 .empty-state p {
-  font-size: 11px;
+  font-size: 13px;
 }
 .network-strip {
   display: flex;
@@ -879,11 +944,11 @@ td details p {
   color: #806117;
 }
 .network-node b {
-  font-size: 13px;
+  font-size: 15px;
   color: #2f3529;
 }
 .network-node small {
-  font-size: 10px;
+  font-size: 12px;
 }
 .network-edge {
   font-size: 24px;
@@ -893,7 +958,7 @@ td details p {
 .network-edge small {
   display: block;
   white-space: nowrap;
-  font-size: 9px;
+  font-size: 12px;
 }
 .capacity-grid {
   display: grid;
@@ -907,14 +972,14 @@ td details p {
   margin: 17px 0;
 }
 .capacity-number small {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 400;
   color: #8f987f;
 }
 .assumptions {
   border-top: 1px solid var(--line);
   padding: 18px 0;
-  font-size: 11px;
+  font-size: 13px;
   color: #879078;
   line-height: 1.8;
 }
@@ -999,7 +1064,7 @@ td details p {
     font-size: 36px;
   }
   .login-copy p {
-    font-size: 12px;
+    font-size: 14px;
   }
   .story-line,
   .login-foot {
@@ -1036,7 +1101,7 @@ td details p {
   }
   .nav-item {
     padding: 11px 12px;
-    font-size: 11px;
+    font-size: 13px;
     white-space: nowrap;
   }
   .nav-item svg {
@@ -1063,7 +1128,7 @@ td details p {
   .topbar {
     height: 58px;
     padding: 0 18px;
-    font-size: 10px;
+    font-size: 12px;
   }
   .topbar-right > span {
     display: none;
@@ -1073,7 +1138,7 @@ td details p {
   }
   .context-strip {
     margin: 18px 0 24px;
-    font-size: 9px;
+    font-size: 12px;
     align-items: flex-start;
   }
   .context-strip > span {
@@ -1094,7 +1159,7 @@ td details p {
     font-size: 28px;
   }
   .welcome-banner p {
-    font-size: 10px;
+    font-size: 12px;
   }
   .metric-grid {
     gap: 10px;
@@ -1104,7 +1169,7 @@ td details p {
     padding: 16px 13px;
   }
   .metric-card > div {
-    font-size: 10px;
+    font-size: 12px;
     gap: 3px;
   }
   .metric-card p {
@@ -1112,7 +1177,7 @@ td details p {
     margin: 15px 0 10px;
   }
   .metric-card > span {
-    font-size: 8px;
+    font-size: 11px;
   }
   .metric-card svg {
     width: 15px;
@@ -1127,13 +1192,13 @@ td details p {
     padding: 17px 10px;
   }
   .network-node b {
-    font-size: 11px;
+    font-size: 13px;
   }
   .network-node small {
-    font-size: 8px;
+    font-size: 11px;
   }
   .workspace-footer {
-    font-size: 7px;
+    font-size: 10px;
     align-items: start;
   }
   .workspace-footer span:last-child {
@@ -1147,7 +1212,7 @@ td details p {
     gap: 16px;
   }
   .flow-strip {
-    font-size: 10px;
+    font-size: 12px;
     gap: 10px;
   }
 }
@@ -1156,4 +1221,30 @@ td details p {
     animation: none !important;
     transition: none !important;
   }
+}
+
+/* Operational content uses the same readable type and warm chart palette. */
+.hourly-trend { font-family: var(--font-sans); }
+.hourly-trend .recharts-text, .hourly-trend .recharts-legend-item-text,
+.hourly-trend .recharts-tooltip-wrapper { font-family: var(--font-sans); }
+.hourly-trend .recharts-legend-item { margin: 0 12px 8px 0 !important; }
+.time-selector-row { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+.time-selector-row label { width: 190px; max-width: 100%; }
+.time-selector-row p { margin: 0; }
+.detail-section { margin-top: 22px; }
+.detail-section > summary { font-size: 15px; font-weight: 600; margin-bottom: 14px; }
+.workspace-content .text-xs { font-size: 14px; line-height: 1.65; }
+.workspace-content .text-sm { font-size: 15px; line-height: 1.65; }
+.workspace-content .text-emerald-700 { color: #8a5900; }
+.workspace-content .bg-emerald-50 { background: #fff8e6; }
+.workspace-content .border-emerald-100, .workspace-content .border-emerald-200 { border-color: #ead8ac; }
+.workspace-content .text-emerald-900 { color: #71501c; }
+@media (max-width: 700px) {
+  .time-selector-row { gap: 12px; }
+  .time-selector-row label { width: 100%; }
+  .welcome-banner h2 { font-size: 25px; }
+  .workspace-footer { flex-wrap: wrap; font-size: 11px; line-height: 1.7; }
+  .workspace-footer span:last-child { text-align: left; max-width: none; }
+  .nav-item { font-size: 14px; }
+  .workspace-label { font-size: 12px; }
 }

@@ -50,7 +50,7 @@ export function InventoryPage() {
     <>
       <PageHeader
         title="재고·소비기한 알림"
-        description="lot별 만료일, 매장별 식자재 재고, 사용 가능한 잉여를 비교합니다."
+        description="식자재별 재고와 소비기한을 확인합니다."
       />
       <DashboardBoundary>
         {(p) => (
@@ -196,7 +196,6 @@ export function ForecastPage() {
     <>
       <PageHeader
         title="판매 수요 예측"
-        description="현재 서비스의 공통 EWMA·요일·공휴일·행사 보정을 적용하고 BOM으로 식자재 소요량을 계산합니다."
       />
       <DashboardBoundary>
         {(p) => (

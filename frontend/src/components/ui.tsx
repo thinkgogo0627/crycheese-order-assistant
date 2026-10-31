@@ -13,7 +13,7 @@ export function Card({
       className={`rounded-2xl border border-[#e6e7df] bg-white p-5 md:p-6 ${className}`}
     >
       {title && (
-        <h2 className="mb-5 text-[13px] font-bold text-[#333a2a]">{title}</h2>
+        <h2 className="mb-5 text-[16px] font-semibold text-[#333028]">{title}</h2>
       )}
       {children}
     </section>
@@ -28,11 +28,11 @@ export function PageHeader({
 }) {
   return (
     <header className="mb-6">
-      <h1 className="text-[26px] leading-tight font-bold tracking-[-.04em] text-[#23271f] md:text-[30px]">
+      <h1 className="text-[28px] leading-tight font-bold tracking-[-.03em] text-[#29271f] md:text-[32px]">
         {title}
       </h1>
       {description && (
-        <p className="mt-2 text-xs leading-6 text-[#8a927e]">{description}</p>
+        <p className="mt-2 text-[15px] leading-7 text-[#716d63]">{description}</p>
       )}
     </header>
   );

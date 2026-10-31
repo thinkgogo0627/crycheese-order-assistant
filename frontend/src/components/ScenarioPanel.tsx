@@ -12,7 +12,7 @@ export function ScenarioPanel() {
       }}
     >
       <div className="section-heading">
-        <h2>분석 조건</h2>
+        <h2>조회 설정</h2>
         <button type="button" className="text-button" onClick={reset}>
           초기화
         </button>
@@ -139,13 +139,6 @@ export function ScenarioPanel() {
           </label>
         </>
       )}
-      <p className="hint">
-        {account?.role === "independent"
-          ? "S03 단독 계산 · 허브 공급과 매장 간 이동 제외"
-          : "S01 허브 ↔ S02 편도 30분 가정 · 준비·검수 별도 15분"}
-        <br />
-        포장 소분은 허용하지 않습니다.
-      </p>
       <button className="button primary" type="submit">
         {dirty ? "변경 조건 적용" : "다시 계산"}
       </button>
