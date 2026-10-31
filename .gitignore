@@ -1,0 +1,9 @@
+/a/
+/docs/
+.venv/
+__pycache__/
+*.pyc
+.env
+.DS_Store
+~$*
+.data/data/raw/
