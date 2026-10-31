@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { HourlySalesTrend, type HourlyTrendData } from '@/components/HourlySalesTrend'
 import { useQuery } from '@tanstack/react-query'
 import { ArrowLeftRight, Clock3, TrendingUp } from 'lucide-react'
 import { useScenario } from '@/lib/scenario'
@@ -23,6 +24,7 @@ interface IntradayResult {
   assumptions: string[]
 }
 interface RollingResult {
+  trend: HourlyTrendData;
   as_of: string; store_id: string; decision_time: string; data_source: string;
   timeline: {
     hour: string; observed_hours: string[]; observed_sold_cumulative: number;
@@ -99,6 +101,12 @@ export function IntradayPage({ forecastOnly = false }: { forecastOnly?: boolean 
       </div>
       <p className="mt-3 text-xs text-slate-500">품절 보호 정책은 실제 식자재 비용으로 추정된 손실비율이 아니라 과소예측에 1.5배를 주는 민감도 실험입니다. 분석일: {day} · {scenario.store_id}. 이전 기간 재생 기능이며, 현재 POS를 직접 읽는 기능이 아닙니다. 기준일은 상단 분석 조건에서 변경하고, 매장은 로그인 계정 기준으로 고정됩니다.</p>
     </Card>
+    <div className="mt-4"><Card title="시간대별 실판매 · 수요 예측 추이">
+      {rolling.isFetching && replayAvailable && <p role="status">예측 갱신 중…</p>}
+      {rolling.isError && <p role="alert">그래프 계산 오류: {rolling.error.message}</p>}
+      {replayAvailable && rolling.data && <HourlySalesTrend data={rolling.data.trend} />}
+      {!replayAvailable && <p>이 날짜는 당일 POS 기록이 없어 그래프를 표시하지 않습니다.</p>}
+    </Card></div>
     <div className="mt-4"><Card title="당일 판매량 누적 → 다음 1시간 예측 (매시간 업데이트)">
       <p className="mb-3 text-xs text-slate-500">10:00은 10:00~10:59 판매 구간입니다. 각 예측에는 직전까지 <b>완료된 시간의 POS 판매량만</b> 누적됩니다.</p>
       {replayAvailable && rolling.isPending && <p className="text-xs text-slate-500">시간별 누적 예측 계산 중…</p>}

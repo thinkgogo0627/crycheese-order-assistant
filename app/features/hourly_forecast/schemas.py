@@ -15,6 +15,25 @@ class TimelineRow(Row):
     top_menus: list[dict[str, Any]]
     ingredient_requirements: list[dict[str, Any]]
 
+class TrendRow(Row):
+    hour: int
+    label: str
+    baseline: float
+    actual: float | None
+    forecast: float | None
+    lower: float | None
+    upper: float | None
+    prior_forecast: float | None
+    absolute_percentage_error: float | None
+
+class TrendData(BaseResponse):
+    store_id: str
+    day: str
+    decision_time: str
+    band_fraction: float
+    band_note: str
+    rows: list[TrendRow]
+
 class HourlyResponse(BaseResponse):
     as_of: date
     store_id: str
@@ -22,6 +41,7 @@ class HourlyResponse(BaseResponse):
     data_source: str
     trade_area: str
     timeline: list[TimelineRow]
+    trend: TrendData
     note: str
     calibration: dict[str, Any] = Field(default_factory=dict)
 
