@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+:root {
+  font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+  color-scheme: light;
+}
+body { @apply bg-slate-50 text-slate-900; }

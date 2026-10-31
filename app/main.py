@@ -11,6 +11,10 @@ DATA = {p.stem: pd.read_csv(p) for p in sorted(RAW.glob("*.csv"))}
 
 app = FastAPI(title="식자재 발주 의사결정 지원")
 
+from fastapi.middleware.cors import CORSMiddleware
+app.add_middleware(CORSMiddleware, allow_origin_regex=r"https://.*\.vercel\.app|http://localhost:5173",
+                    allow_methods=["*"], allow_headers=["*"])
+
 
 @app.get("/")
 def root():
